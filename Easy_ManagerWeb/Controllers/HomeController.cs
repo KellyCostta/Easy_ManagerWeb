@@ -1,32 +1,29 @@
-using System.Diagnostics;
-using Easy_ManagerWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Easy_ManagerWeb.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
-
         public IActionResult Index()
         {
-            return View();
-        }
+            // Tenta recuperar da sessão
+            var usuario = HttpContext.Session.GetString("usuario_logado");
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+            // Se não houver, tenta restaurar do cookie
+            if (string.IsNullOrEmpty(usuario))
+            {
+                usuario = Request.Cookies["usuario_logado"];
+                if (!string.IsNullOrEmpty(usuario))
+                {
+                    HttpContext.Session.SetString("usuario_logado", usuario);
+                    usuario = Request.Cookies["usuario_logado"];
+                }
+            }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            // Passa o usuário para a view
+            ViewBag.Usuario = usuario;
+
+            return View();
         }
     }
 }

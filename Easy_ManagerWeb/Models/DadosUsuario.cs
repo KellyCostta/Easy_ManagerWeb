@@ -2,7 +2,8 @@
 {
     public class DadosUsuario
     {
-        public string Usuario { get; set; }
-        public string Senha { get; set; }
+        public string Usuario { get; set; } = string.Empty;
+        public string Senha { get; set; } = string.Empty;
+
     }
 }
