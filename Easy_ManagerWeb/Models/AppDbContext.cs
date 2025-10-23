@@ -11,6 +11,16 @@ namespace Easy_ManagerWeb.Models
 
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Entrega> Entregas { get; set; }
-        public DbSet<Pacote> Pacotes { get; set; }  
+        public DbSet<Pacote> Pacotes { get; set; }
+        public DbSet<DadosUsuario> usuarios { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Garante o nome correto da tabela, independentemente do nome do DbSet
+            modelBuilder.Entity<DadosUsuario>().ToTable("usuario");
+        }
+
     }
 }

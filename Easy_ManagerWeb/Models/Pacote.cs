@@ -25,6 +25,7 @@ namespace Easy_ManagerWeb.Models
         [Display(Name = "Data de Cadastro")]
         [Column("data_cadastro")]
         public DateTime DataCadastro { get; set; }
+        public ICollection<Entrega> Entregas { get; set; } = new List<Entrega>();
 
     }
 }

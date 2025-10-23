@@ -31,5 +31,10 @@ namespace Easy_ManagerWeb.Models
         public int? PacoteId { get; set; }
         [ForeignKey("PacoteId")]
         public Pacote? Pacote { get; set; }
+
+        // 🆕 Campo para o valor do orçamento
+        [Column("orcamento")]
+        [Display(Name = "Valor do Orçamento")]
+        public double? Orcamento { get; set; } = 0;
     }
 }

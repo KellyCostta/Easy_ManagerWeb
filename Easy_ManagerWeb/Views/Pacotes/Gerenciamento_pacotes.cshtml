@@ -17,9 +17,11 @@
                 <tr>
                     <th>ID</th>
                     <th>Descrição</th>
-                    <th>Tamanho</th>  
+                    <th>Tamanho</th>
                     <th>Peso</th>
                     <th>Data de Inserção</th>
+                    <th>Clientes Vinculados</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,17 +31,41 @@
                     {
                         <tr>
                             <td>@item.Id</td>
-                            <td>@Html.DisplayFor(modelItem => item.Descricao)</td>
-                            <td>@Html.DisplayFor(modelItem => item.Tamanho)</td>  
-                            <td>@Html.DisplayFor(modelItem => item.Peso)</td>
+                            <td>@item.Descricao</td>
+                            <td>@item.Tamanho</td>
+                            <td>@item.Peso</td>
                             <td>@item.DataCadastro.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @if (item.Entregas != null && item.Entregas.Any())
+                                {
+                                    <ul>
+                                        @foreach (var entrega in item.Entregas)
+                                        {
+                                            <li>@entrega.Cliente?.Nome</li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Nenhum cliente vinculado</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.Entregas == null || !item.Entregas.Any())
+                                {
+                                    <a asp-controller="Entregas" asp-action="Nova_entrega" asp-route-pacoteId="@item.Id" class="btn btn-sm btn-success">
+                                        Vincular Cliente / Calcular Entrega
+                                    </a>
+
+                                }
+                            </td>
                         </tr>
                     }
                 }
                 else
                 {
                     <tr>
-                        <td colspan="5" class="text-center">Nenhum pacote cadastrado.</td>  
+                        <td colspan="7" class="text-center">Nenhum pacote cadastrado.</td>
                     </tr>
                 }
             </tbody>

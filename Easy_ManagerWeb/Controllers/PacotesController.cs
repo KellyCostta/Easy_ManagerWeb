@@ -1,5 +1,6 @@
 ﻿using Easy_ManagerWeb.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 
@@ -14,10 +15,14 @@ namespace Easy_ManagerWeb.Controllers
             _context = context;
         }
 
-        // Listar pacotes
+        // Listar pacotes com clientes vinculados
         public IActionResult Gerenciamento_pacotes()
         {
-            List<Pacote> pacotes = [.. _context.Pacotes.OrderByDescending(p => p.DataCadastro)];
+            var pacotes = _context.Pacotes
+                                  .Include(p => p.Entregas) // Pacotes com entregas
+                                  .ThenInclude(e => e.Cliente) // Clientes vinculados
+                                  .OrderByDescending(p => p.DataCadastro)
+                                  .ToList();
 
             return View(pacotes);
         }
@@ -25,7 +30,7 @@ namespace Easy_ManagerWeb.Controllers
         // Formulário para novo pacote
         public IActionResult Novo_pacote()
         {
-            return View(); // Apenas abre o formulário
+            return View();
         }
 
         // Criar novo pacote
@@ -34,7 +39,6 @@ namespace Easy_ManagerWeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Define a data de cadastro ao criar
                 pacote.DataCadastro = DateTime.Now;
 
                 _context.Pacotes.Add(pacote);
@@ -43,7 +47,6 @@ namespace Easy_ManagerWeb.Controllers
                 return RedirectToAction("Gerenciamento_pacotes");
             }
 
-            // Se houver erro, retorna para o formulário com os dados preenchidos
             return View(pacote);
         }
     }

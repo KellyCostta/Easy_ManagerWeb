@@ -6,46 +6,4 @@
 <p>Você está logado.</p>
 <a asp-action="Logout">Sair</a>
 
-<div id="confirmBox" style="display:none; border:1px solid #aaa; padding:20px; width:320px; border-radius:8px; margin-top:20px;">
-    <p>Você estava logado anteriormente. Deseja continuar conectado?</p>
-    <button id="btnSim" style="background-color:#4CAF50; color:white;">Sim</button>
-    <button id="btnNao" style="background-color:#f44336; color:white;">Não</button>
-    <p id="tempoRestante" style="color:#555;"></p>
-</div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const usuarioSession = '@(ViewBag.UsuarioSession ?? "")';
-
-
-        if (!usuarioSession) {
-            const jaLogado = document.cookie.includes("usuario_logado=");
-            if (jaLogado) {
-                const box = document.getElementById("confirmBox");
-                const tempo = document.getElementById("tempoRestante");
-                let contador = 5;
-
-                box.style.display = "block";
-
-                const intervalo = setInterval(() => {
-                    tempo.textContent = "Desconectando em " + contador + "s...";
-                    contador--;
-                    if (contador < 0) {
-                        clearInterval(intervalo);
-                        window.location.href = "/Account/Logout";
-                    }
-                }, 1000);
-
-                document.getElementById("btnSim").onclick = () => {
-                    clearInterval(intervalo);
-                    box.style.display = "none";
-                };
-
-                document.getElementById("btnNao").onclick = () => {
-                    clearInterval(intervalo);
-                    window.location.href = "/Account/Logout";
-                };
-            }
-        }
-    });
-</script>
