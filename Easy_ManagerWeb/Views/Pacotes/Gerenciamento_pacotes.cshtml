@@ -1,0 +1,80 @@
+﻿@model IEnumerable<Easy_ManagerWeb.Models.Pacote>
+
+@{
+    ViewData["Title"] = "Gerenciamento de Pacotes";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Gerenciamento de Pacotes</h2>
+
+    <a asp-action="Novo_pacote" class="btn btn-success btn-lg shadow-sm">
+        <i class="bi bi-box-fill"></i> Novo Pacote
+    </a>
+</div>
+
+@if (TempData["ErroExclusao"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Erro de Exclusão:</strong> @TempData["ErroExclusao"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-info text-center" role="alert">
+                Nenhum pacote cadastrado. Clique em "Novo Pacote" para começar.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="bg-light">
+                        <tr>
+                            
+                            <th>@Html.DisplayNameFor(model => model.Tamanho)</th>
+                            <th>@Html.DisplayNameFor(model => model.Peso) (g)</th>
+                            <th>Entregas Vinculadas</th>
+                            <th>Data de Cadastro</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var pacote in Model)
+                        {
+                            <tr>
+               
+                                <td>@Html.DisplayFor(modelItem => pacote.Tamanho)</td>
+                                <td>@Html.DisplayFor(modelItem => pacote.Peso)</td>
+
+                                <td>
+                                    <span class="badge bg-primary">
+                                        @(pacote.Entregas?.Count() ?? 0)
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @(pacote.DataCadastro.HasValue? pacote.DataCadastro.Value.ToString("dd/MM/yyyy") : "-")
+                                </td>
+
+                                <td>
+                                    <a asp-action="Editar_Pacote" asp-route-id="@pacote.Id" class="btn btn-warning btn-sm" title="Editar Pacote">
+                                        <i class="bi bi-pencil-fill"></i> Editar
+                                    </a>
+
+                                    <a asp-action="Excluir_Pacote" asp-route-id="@pacote.Id" class="btn btn-danger btn-sm" title="Excluir Pacote">
+                                        <i class="bi bi-trash-fill"></i> Excluir
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

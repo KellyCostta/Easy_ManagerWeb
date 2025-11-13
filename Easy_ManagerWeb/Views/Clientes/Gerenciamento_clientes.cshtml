@@ -1,0 +1,65 @@
+﻿@model IEnumerable<Easy_ManagerWeb.Models.Cliente>
+
+@{
+    ViewData["Title"] = "Gerenciamento de Clientes";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Gerenciamento de Clientes</h2>
+
+    <a asp-action="Novo_Cliente" class="btn btn-success btn-lg shadow-sm">
+        <i class="bi bi-plus-circle-fill"></i> Novo Cliente
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-info text-center" role="alert">
+                Nenhum cliente cadastrado. Clique em "Novo Cliente" para começar.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.Nome)</th>
+                            <th>@Html.DisplayNameFor(model => model.Email)</th>
+                            <th>@Html.DisplayNameFor(model => model.Telefone)</th>
+                            <th>Data de Cadastro</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cliente in Model)
+                        {
+                            <tr>
+                                <td>@Html.DisplayFor(modelItem => cliente.Nome)</td>
+                                <td>@Html.DisplayFor(modelItem => cliente.Email)</td>
+                                <td>@Html.DisplayFor(modelItem => cliente.Telefone)</td>
+
+                                <td>
+                                    @(cliente.DataCadastro.ToString("dd/MM/yyyy"))
+                                </td>
+
+                                <td>
+                                    <a asp-action="Editar_Cliente" asp-route-id="@cliente.Id" class="btn btn-warning btn-sm" title="Editar Cliente">
+                                        <i class="bi bi-pencil-fill"></i> Editar
+                                    </a>
+
+                                    <a asp-action="Excluir_Cliente" asp-route-id="@cliente.Id" class="btn btn-danger btn-sm" title="Excluir Cliente">
+                                        <i class="bi bi-trash-fill"></i> Excluir
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

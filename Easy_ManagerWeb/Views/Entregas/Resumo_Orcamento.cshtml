@@ -1,0 +1,29 @@
+﻿@model Easy_ManagerWeb.Models.Entrega
+
+@{
+    ViewData["Title"] = "Orçamento Gerado";
+}
+
+<div class="card shadow p-4 mx-auto mt-4" style="max-width:600px;">
+    <h3 class="text-center mb-4">Resumo do Orçamento</h3>
+
+    <p><strong>Cliente:</strong> @Model.Cliente?.Nome</p>
+    <p><strong>Endereço:</strong> @Model.Cliente.Endereco</p>
+    <p><strong> Pacote</strong></p>   
+    <p><strong>Tamanho:</strong> @Model.Pacote?.Tamanho</p>
+    <p><strong>Peso:</strong> @Model.Pacote?.Peso</p>
+    <p><strong>Entrega</strong></p>
+    <p><strong>Distância:</strong> @Model.Distancia km</p>
+    <p><strong>Tempo: </strong> @Model.Tempo minutos</p>
+    <p><strong>Status:</strong> @Model.Status</p>
+
+    <hr />
+
+    <h4 class="text-center text-success">
+        Valor estimado: <strong>R$ @Model.Orcamento?.ToString("F2")</strong>
+    </h4>
+
+    <div class="text-center mt-4">
+        <a asp-action="Gerenciamento_entregas" class="btn btn-primary">Voltar</a>
+    </div>
+</div>

@@ -1,0 +1,59 @@
+﻿@model Easy_ManagerWeb.Models.Entrega
+
+@{
+    ViewData["Title"] = "Editar Entrega";
+    var clientes = (SelectList)ViewBag.Clientes;
+    var pacotes = (SelectList)ViewBag.Pacotes;
+}
+
+<div class="card shadow-sm">
+    <div class="card-header bg-warning text-dark">
+        <h4 class="mb-0">Editando Entrega #@Model.Id</h4>
+    </div>
+    <div class="card-body">
+
+        <form asp-action="Editar_Entrega" method="post">
+
+            <input type="hidden" asp-for="Id" />
+
+            <input type="hidden" asp-for="Orcamento" />
+
+            <div class="mb-3">
+                <label asp-for="ClienteId" class="form-label">Cliente</label>
+                <select asp-for="ClienteId" class="form-select" asp-items="clientes" required>
+                    <option value="">Selecione o Cliente</option>
+                </select>
+                <span asp-validation-for="ClienteId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PacoteId" class="form-label">Pacote/Produto</label>
+                <select asp-for="PacoteId" class="form-select" asp-items="pacotes" required>
+                    <option value="">Selecione o Pacote</option>
+                </select>
+                <span asp-validation-for="PacoteId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Distancia" class="form-label">Distância (em Km)</label>
+                <input asp-for="Distancia" type="number" step="0.1" class="form-control" placeholder="Distância percorrida em Km" required />
+                <span asp-validation-for="Distancia" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Tempo" class="form-label">Tempo Estimado (em horas)</label>
+                <input asp-for="Tempo" class="form-control" placeholder="Ex: 2h 30min" required />
+                <span asp-validation-for="Tempo" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-action="Gerenciamento_entregas" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
+                <button type="submit" class="btn btn-warning btn-lg">
+                    <i class="bi bi-pencil-fill"></i> Salvar e Recalcular
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

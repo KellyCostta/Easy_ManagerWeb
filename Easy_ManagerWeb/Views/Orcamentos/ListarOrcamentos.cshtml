@@ -1,0 +1,59 @@
+﻿@model IEnumerable<Easy_ManagerWeb.Models.Orcamento>
+
+@{
+    ViewData["Title"] = "Orçamentos Salvos";
+}
+
+<h2>Orçamentos Salvos</h2>
+
+@if (TempData["Mensagem"] != null)
+{
+    <div class="alert alert-success">@TempData["Mensagem"]</div>
+}
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Cliente</th>
+            <th>Pacote</th>
+            <th>Tamanho</th>
+            <th>Peso (g)</th>
+            <th>Distância (km)</th>
+            <th>Tempo Estimado</th>
+            <th>Valor do Orçamento</th>
+            <th>Status</th>
+            <th>Data</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.NomeCliente</td>
+                <td>@item.DescricaoPacote</td>
+                <td>@item.Tamanho</td>
+                <td>@item.Peso</td>
+                <td>@item.Distancia</td>
+                <td>@item.Tempo</td>
+                <td>R$ @item.ValorOrcamento.ToString("F2")</td>
+                <td>@item.Status</td>
+                <td>@item.DataCadastro.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>
+                    <!-- Botão Aceitar -->
+                    <a asp-controller="Entregas" asp-action="CreateFromOrcamento" asp-route-id="@item.Id" class="btn btn-success btn-sm">
+                        Aceitar e Criar Entrega
+                    </a>
+
+
+                    <!-- Botão Deletar -->
+                    <a asp-action="Deletar" asp-route-id="@item.Id" class="btn btn-danger btn-sm"
+                       onclick="return confirm('Tem certeza que deseja deletar este orçamento?');">
+                        Deletar
+                    </a>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,51 @@
+﻿@model IEnumerable<Easy_ManagerWeb.Models.Entrega>
+
+@{
+    ViewData["Title"] = ViewBag.Titulo;
+}
+
+<div class="d-flex justify-content-between mt-4">
+<a asp-action="Gerenciamento_entregas" class="btn btn-secondary">
+    <i class="bi bi-arrow-left"></i> Voltar
+</a>
+</div>
+<div class="d-flex justify-content-end mb-3">
+    <a asp-action="GerarPdf" asp-route-periodo="@Context.Request.Query["periodo"]" class="btn btn-danger">
+        <i class="bi bi-file-earmark-pdf"></i> Gerar PDF
+    </a>
+</div>
+
+<div class="card shadow p-4 mt-4">
+    <h3 class="text-center mb-4">@ViewBag.Titulo</h3>
+
+    @if (!Model.Any())
+    {
+        <p class="text-center text-muted">Nenhuma entrega encontrada para este período.</p>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Endereço</th>
+                    <th>Data Agendada</th>
+                    <th>Status</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entrega in Model)
+                {
+                    <tr>
+                        <td>@entrega.Cliente?.Nome</td>
+                        <td>@entrega.Endereco</td>
+                        <td>@entrega.DataAgendada.ToString("dd/MM/yyyy")</td>
+                        <td>@entrega.Status</td>
+                        <td>@(entrega.Orcamento.HasValue? entrega.Orcamento.Value.ToString("C") : "R$ 0,00")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

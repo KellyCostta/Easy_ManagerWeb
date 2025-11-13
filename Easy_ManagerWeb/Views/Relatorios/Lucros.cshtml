@@ -1,0 +1,107 @@
+﻿@{
+    ViewData["Title"] = "Relatório de Lucros";
+}
+
+<h2>Relatório de Lucros</h2>
+
+<form method="post" asp-action="Lucros" asp-controller="Relatorios">
+    <div class="form-group mb-3">
+        <label for="periodo">Escolha o período:</label>
+        <select name="periodo" id="periodo" class="form-select">
+            <option value="">Personalizado</option>
+            <option value="diario">Diário</option>
+            <option value="semanal">Semanal</option>
+            <option value="mensal">Mensal</option>
+            <option value="anual">Anual</option>
+        </select>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="dataInicio">Data Início:</label>
+            <input type="date" name="dataInicio" id="dataInicio" class="form-control" />
+        </div>
+        <div class="col-md-6">
+            <label for="dataFim">Data Fim:</label>
+            <input type="date" name="dataFim" id="dataFim" class="form-control" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Gerar Relatório</button>
+</form>
+
+
+@if (ViewBag.Receita != null)
+{
+    <hr />
+    <h4>Período: @ViewBag.DataInicio - @ViewBag.DataFim (@ViewBag.Periodo)</h4>
+
+    <!-- =================== DETALHE DAS VENDAS =================== -->
+    <h3 class="mt-4">📦 Detalhamento das Vendas / Entregas</h3>
+
+    <table class="table table-striped table-hover mt-3">
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Data Agendada</th>
+                <th>Valor da Entrega (R$)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var venda in ViewBag.Vendas as IEnumerable<dynamic>)
+            {
+                <tr>
+                    <td>@venda.Cliente</td>
+                    <td>@Convert.ToDateTime(venda.DataAgendada).ToString("dd/MM/yyyy")</td>
+                    <td>@string.Format("R$ {0:N2}", venda.ValorEntrega)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- =================== DETALHE DOS GASTOS =================== -->
+    <h3 class="mt-4">💸 Detalhamento dos Gastos</h3>
+
+    <table class="table table-striped table-hover mt-3">
+        <thead>
+            <tr>
+                <th>Tipo de Gasto</th>
+                <th>Valor (R$)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var gasto in ViewBag.Gastos as IEnumerable<dynamic>)
+            {
+                <tr>
+                    <td>@gasto.Tipo</td>
+                    <td>@string.Format("R$ {0:N2}", gasto.Valor)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- =================== RESUMO FINAL =================== -->
+    <h3 class="mt-4">📈 Resumo Financeiro</h3>
+
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr class="table-light">
+                <th>Receita</th>
+                <th>Despesas</th>
+                <th>Lucro</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>R$ @ViewBag.Receita.ToString("F2")</td>
+                <td>R$ @ViewBag.Despesas.ToString("F2")</td>
+                <td><strong>R$ @ViewBag.Lucro.ToString("F2")</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="@Url.Action("GerarPdf", "Relatorios", new { periodo = ViewBag.Periodo })"
+       class="btn btn-success" target="_blank">
+        <i class="bi bi-file-earmark-pdf"></i> Gerar PDF
+    </a>
+}

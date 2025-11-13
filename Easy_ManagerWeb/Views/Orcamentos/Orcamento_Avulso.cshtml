@@ -1,0 +1,146 @@
+﻿@model Easy_ManagerWeb.Models.Orcamento
+
+<h2>Orçamento sem Compromisso</h2>
+
+@if (TempData["Mensagem"] != null)
+{
+    <div class="alert alert-success">@TempData["Mensagem"]</div>
+}
+
+<form asp-action="SalvarOrcamentoAvulso" method="post" id="formOrcamentoAvulso">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a asp-action="ListarOrcamentos" class="btn btn-outline-primary">Listar Orçamentos</a>
+        </div>
+
+    <div class="mb-3">
+        <label class="form-label">Nome do Cliente</label>
+        <input type="text" class="form-control" name="NomeCliente" placeholder="Digite o nome do cliente" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Telefone</label>
+        <input type="text" class="form-control" name="TelefoneCliente" placeholder="(xx) xxxxx-xxxx" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Endereço</label>
+        <input type="text" class="form-control" name="EnderecoCliente" placeholder="Rua, número, bairro..." />
+    </div>
+
+    <hr />
+
+    <div class="mb-3">
+        <label class="form-label">Descrição do Pacote</label>
+        <input type="text" class="form-control" name="DescricaoPacote" placeholder="Ex: Documento, caixa pequena..." required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Tamanho</label>
+        <select class="form-select" name="Tamanho" id="tamanho" required>
+            <option value="">-- Selecione o tamanho --</option>
+            <option value="Pequeno">Pequeno</option>
+            <option value="Médio">Médio</option>
+            <option value="Grande">Grande</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Peso (g)</label>
+        <input type="number" class="form-control" name="Peso" id="peso" step="1" placeholder="Ex: 500 (gramas)" />
+    </div>
+
+    <hr />
+
+    <div class="mb-3">
+        <label class="form-label">Distância (km)</label>
+        <input type="number" step="0.01" class="form-control" name="Distancia" id="distancia" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Tempo Estimado</label>
+        <input class="form-control" name="Tempo" id="tempo" placeholder="Ex: 30 min" />
+    </div>
+
+    <!-- Campo oculto para guardar o valor do orçamento -->
+    <input type="hidden" name="ValorOrcamento" id="valorOrcamento" />
+
+    <button type="button" id="btnCalcular" class="btn btn-secondary me-2">Calcular Orçamento</button>
+    <button type="submit" class="btn btn-primary">Salvar Orçamento</button>
+</form>
+
+<hr />
+
+<div id="resultadoOrcamento" class="mt-4" style="display:none;">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Resumo do Orçamento</h4>
+            <p><strong>Cliente:</strong> <span id="resCliente"></span></p>
+            <p><strong>Telefone:</strong> <span id="resTelefone"></span></p>
+            <p><strong>Endereço:</strong> <span id="resEndereco"></span></p>
+            <hr />
+            <p><strong>Pacote:</strong> <span id="resDescricao"></span></p>
+            <p><strong>Tamanho:</strong> <span id="resTamanho"></span></p>
+            <p><strong>Peso:</strong> <span id="resPeso"></span> g</p>
+            <hr />
+            <p><strong>Distância:</strong> <span id="resDistancia"></span> km</p>
+            <p><strong>Tempo Estimado:</strong> <span id="resTempo"></span></p>
+            <h5 class="mt-3 text-success"><strong>Valor do Orçamento:</strong> R$ <span id="resValor"></span></h5>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Função de cálculo do orçamento
+        function calcularOrcamento(distancia, tamanho, peso) {
+            let base = 5; // taxa base
+            let valorKm = 2.5; // valor por km
+            let adicionalTamanho = 0;
+            let adicionalPeso = 0;
+
+            switch (tamanho) {
+                case "Pequeno": adicionalTamanho = 0; break;
+                case "Médio": adicionalTamanho = 10; break;
+                case "Grande": adicionalTamanho = 20; break;
+            }
+
+            // Adiciona R$ 0,50 por cada 1000g (1kg)
+            adicionalPeso = (peso / 1000) * 0.5;
+
+            return (base + (distancia * valorKm) + adicionalTamanho + adicionalPeso).toFixed(2);
+        }
+
+        // Botão de cálculo do orçamento
+        $('#btnCalcular').on('click', function () {
+            const nome = $('input[name="NomeCliente"]').val();
+            const telefone = $('input[name="TelefoneCliente"]').val();
+            const endereco = $('input[name="EnderecoCliente"]').val();
+            const desc = $('input[name="DescricaoPacote"]').val();
+            const tamanho = $('#tamanho').val();
+            const peso = parseFloat($('#peso').val()) || 0;
+            const distancia = parseFloat($('#distancia').val());
+            const tempo = $('#tempo').val();
+
+            if (!distancia || !tamanho) {
+                alert('Preencha a distância e o tamanho para calcular.');
+                return;
+            }
+
+            const total = calcularOrcamento(distancia, tamanho, peso);
+            $('#valorOrcamento').val(total); // joga o valor no campo oculto
+
+            // Mostra o resumo
+            $('#resCliente').text(nome);
+            $('#resTelefone').text(telefone);
+            $('#resEndereco').text(endereco);
+            $('#resDescricao').text(desc);
+            $('#resTamanho').text(tamanho);
+            $('#resPeso').text(peso);
+            $('#resDistancia').text(distancia);
+            $('#resTempo').text(tempo);
+            $('#resValor').text(total);
+
+            $('#resultadoOrcamento').fadeIn();
+        });
+    </script>
+}

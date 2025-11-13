@@ -1,0 +1,39 @@
+﻿@model Easy_ManagerWeb.Models.Pacote
+
+@{
+    ViewData["Title"] = "Excluir Pacote";
+}
+
+<div class="card shadow-sm border-danger">
+    <div class="card-header bg-danger text-white">
+        <h4 class="mb-0">Atenção! Confirmação de Exclusão de Pacote</h4>
+    </div>
+    <div class="card-body">
+        <h5 class="text-danger mb-3">Tem certeza que deseja excluir o seguinte pacote/item?</h5>
+
+        <dl class="row">
+            <dt class="col-sm-3">ID:</dt>
+            <dd class="col-sm-9">@Model.Id</dd>
+
+            <dt class="col-sm-3">Tamanho:</dt>
+            <dd class="col-sm-9">@Model.Tamanho</dd>
+
+            <dt class="col-sm-3">Peso:</dt>
+            <dd class="col-sm-9">@Model.Peso</dd>
+        </dl>
+
+        <form asp-action="Excluir_Pacote" method="post">
+
+            <input type="hidden" asp-for="Id" />
+
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-action="Gerenciamento_pacotes" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Cancelar
+                </a>
+                <button type="submit" class="btn btn-danger btn-lg">
+                    <i class="bi bi-trash-fill"></i> Sim, Excluir
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

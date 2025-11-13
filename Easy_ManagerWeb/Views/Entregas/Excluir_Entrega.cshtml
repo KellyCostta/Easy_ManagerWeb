@@ -1,0 +1,42 @@
+﻿@model Easy_ManagerWeb.Models.Entrega
+
+@{
+    ViewData["Title"] = "Excluir Entrega";
+}
+
+<div class="card shadow-sm border-danger">
+    <div class="card-header bg-danger text-white">
+        <h4 class="mb-0">Atenção! Confirmação de Exclusão de Entrega</h4>
+    </div>
+    <div class="card-body">
+        <h5 class="text-danger mb-3">Tem certeza que deseja excluir esta entrega?</h5>
+
+        <dl class="row">
+            <dt class="col-sm-3">ID da Entrega:</dt>
+            <dd class="col-sm-9">@Model.Id</dd>
+
+            <dt class="col-sm-3">Cliente:</dt>
+            <dd class="col-sm-9">@Model.Cliente?.Nome</dd>
+
+            <dt class="col-sm-3">Pacote:</dt>
+            <dd class="col-sm-9">@Model.Pacote?.Tamanho</dd>
+
+            <dt class="col-sm-3">Orçamento:</dt>
+            <dd class="col-sm-9">@Model.Orcamento?.ToString("C")</dd>
+        </dl>
+
+        <form asp-action="Excluir_Entrega" method="post">
+
+            <input type="hidden" asp-for="Id" />
+
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-action="Gerenciamento_entregas" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Cancelar
+                </a>
+                <button type="submit" class="btn btn-danger btn-lg">
+                    <i class="bi bi-trash-fill"></i> Sim, Excluir Definitivamente
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

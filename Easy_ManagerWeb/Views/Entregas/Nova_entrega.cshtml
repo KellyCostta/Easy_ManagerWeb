@@ -1,0 +1,193 @@
+﻿@model Easy_ManagerWeb.Models.Entrega
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+<h2>Nova Entrega</h2>
+
+<form asp-action="Nova_entrega" method="post" id="formNovaEntrega">
+    <div class="mb-3">
+        <label asp-for="ClienteId" class="form-label">Cliente</label>
+        <div class="input-group">
+            <select asp-for="ClienteId" class="form-select" asp-items="ViewBag.Clientes as SelectList" id="selectCliente">
+                <option value="">-- Selecione um cliente --</option>
+            </select>
+            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalNovoCliente">
+                + Novo Cliente
+            </button>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="PacoteId" class="form-label">Pacote</label>
+        <div class="input-group">
+            <select asp-for="PacoteId" class="form-select" asp-items="ViewBag.Pacotes as SelectList" id="selectPacote">
+                <option value="">-- Selecione um pacote --</option>
+            </select>
+            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalNovoPacote">
+                + Novo Pacote
+            </button>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Status" class="form-label">Status</label>
+        <select asp-for="Status" class="form-select">
+            <option value="">-- Selecione o status --</option>
+            <option value="Pendente">Pendente</option>
+            <option value="Entregue">Entregue</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Distancia" class="form-label">Distância (km)</label>
+        <input asp-for="Distancia" type="number" step="0.01" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Tempo" class="form-label">Tempo Estimado</label>
+        <input asp-for="Tempo" class="form-control" placeholder="Ex: 30min" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="DataAgendada" class="form-label">Data Agendada para Entrega</label>
+        <input asp-for="DataAgendada" class="form-control" type="date" />
+    </div>
+
+
+    <button type="submit" class="btn btn-primary">Salvar</button>
+</form>
+
+<hr />
+
+<!-- Modal Novo Cliente -->
+<div class="modal fade" id="modalNovoCliente" tabindex="-1" aria-labelledby="modalNovoClienteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="formNovoCliente">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalNovoClienteLabel">Novo Cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nome</label>
+                        <input type="text" class="form-control" id="novoClienteNome" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Telefone</label>
+                        <input type="text" class="form-control" id="novoClienteTelefone" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Endereço</label>
+                        <input type="text" class="form-control" id="novoClienteEndereco" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Cliente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Novo Pacote -->
+<div class="modal fade" id="modalNovoPacote" tabindex="-1" aria-labelledby="modalNovoPacoteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="formNovoPacote">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalNovoPacoteLabel">Novo Pacote</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Descrição</label>
+                        <input type="text" class="form-control" id="novoPacoteDescricao" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tamanho</label>
+                        <select class="form-select" id="novoPacoteTamanho" required>
+                            <option value="">-- Selecione o tamanho --</option>
+                            <option value="Pequeno">Pequeno</option>
+                            <option value="Médio">Médio</option>
+                            <option value="Grande">Grande</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Peso</label>
+                        <input type="text" class="form-control" id="novoPacotePeso" placeholder="Ex: 2kg" />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Pacote</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const vindoDeOrcamento = "@(ViewBag.VindoDeOrcamento ?? false)".toLowerCase() === "true";
+
+            if (vindoDeOrcamento) {
+                const nomeCliente = "@ViewBag.NomeCliente";
+                const telefoneCliente = "@ViewBag.TelefoneCliente";
+                const enderecoCliente = "@ViewBag.EnderecoCliente";
+
+                const descricaoPacote = "@ViewBag.DescricaoPacote";
+                const tamanhoPacote = "@ViewBag.TamanhoPacote";
+                const pesoPacote = "@ViewBag.PesoPacote";
+
+                // Preenche campos do modal de novo cliente (caso queira revisar antes de salvar)
+                document.getElementById("novoClienteNome").value = nomeCliente || "";
+                document.getElementById("novoClienteTelefone").value = telefoneCliente || "";
+                document.getElementById("novoClienteEndereco").value = enderecoCliente || "";
+
+                document.getElementById("novoPacoteDescricao").value = descricaoPacote || "";
+                document.getElementById("novoPacoteTamanho").value = tamanhoPacote || "";
+                document.getElementById("novoPacotePeso").value = pesoPacote || "";
+
+                console.log("Dados carregados automaticamente do orçamento.");
+            }
+        });
+    </script>
+
+    <script>
+                    // Salvar novo pacote via AJAX
+        $('#formNovoPacote').submit(function (e) {
+            e.preventDefault();
+
+            var pacote = {
+                Descricao: $('#novoPacoteDescricao').val(),
+                Tamanho: $('#novoPacoteTamanho').val(),
+                Peso: $('#novoPacotePeso').val()
+            };
+
+            $.ajax({
+                url: '/Pacotes/NovoPacoteAjax',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(pacote),
+                success: function (data) {
+                    // Adiciona o novo pacote ao select e seleciona
+                    $('#selectPacote').append(new Option(data.descricao, data.id));
+                    $('#selectPacote').val(data.id);
+                    $('#modalNovoPacote').modal('hide');
+                },
+                error: function () {
+                    alert('Erro ao salvar o pacote.');
+                }
+            });
+        });
+
+
+
+    </script>
+}
+

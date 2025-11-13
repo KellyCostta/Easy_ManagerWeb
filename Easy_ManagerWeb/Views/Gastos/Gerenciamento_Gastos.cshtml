@@ -1,0 +1,47 @@
+﻿@model IEnumerable<Easy_ManagerWeb.Models.Gasto>
+
+@{
+    ViewData["Title"] = "Gastos";
+}
+
+<h3 class="mb-3">Lista de Gastos</h3>
+<a asp-action="Novo_Gasto" class="btn btn-success">Adicionar Gasto</a>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-info text-center" role="alert">
+                Nenhum gasto cadastrado. Clique em "Novo Gasto" para começar.
+            </div>
+            }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Valor</th>
+                            <th>Data</th>
+                       
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Tipo</td>
+                                <td>R$ @item.Valor.ToString("F2")</td>
+                                <td>@item.DataGasto.ToShortDateString()</td>
+                
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+

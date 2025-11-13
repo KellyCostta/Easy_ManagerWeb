@@ -1,0 +1,43 @@
+﻿@model Easy_ManagerWeb.Models.Gasto
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Novo Gasto";
+}
+
+<div class="card shadow p-4 mx-auto mt-4" style="max-width:600px;">
+    <h3 class="text-center mb-4">Novo Gasto</h3>
+
+    <form asp-action="Novo_Gasto" method="post">
+
+
+        <div class="mb-3">
+            <label asp-for="Valor" class="form-label">Valor (R$)</label>
+            <input asp-for="Valor" type="number" step="0.01" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Tipo" class="form-label">Categoria</label>
+            <select asp-for="Tipo" class="form-select" required>
+                <option value="">-- Selecione a categoria --</option>
+                <option value="Combustível">Combustível</option>
+                <option value="Manutenção">Manutenção</option>
+                <option value="Alimentação">Alimentação</option>
+                <option value="Pedágio">Pedágio</option>
+                <option value="Outros">Outros</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="DataGasto" class="form-label">Data do Gasto</label>
+            <input asp-for="DataGasto" type="date" class="form-control" required />
+        </div>
+
+
+        <button type="submit" class="btn btn-primary w-100">Salvar Gasto</button>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
