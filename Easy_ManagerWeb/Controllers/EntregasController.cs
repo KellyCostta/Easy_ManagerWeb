@@ -285,11 +285,11 @@ namespace Easy_ManagerWeb.Controllers
         {
             var entregas = _context.Entregas
                 .Include(e => e.Cliente)
-                .Include(e => e.Pacote)
                 .AsQueryable();
 
             DateTime hoje = DateTime.Today;
 
+            // FILTROS
             switch (periodo?.ToLower())
             {
                 case "futuras":
@@ -318,59 +318,70 @@ namespace Easy_ManagerWeb.Controllers
                 var doc = new Document(PageSize.A4, 40, 40, 60, 40);
                 var writer = PdfWriter.GetInstance(doc, stream);
 
-                // Cabeçalho/Rodapé
                 writer.PageEvent = new PdfHeaderFooter("Easy Manager");
-
                 doc.Open();
 
-                var titulo = new Paragraph($"Relatório de Entregas - {periodo?.ToUpper() ?? "GERAL"}",
-                    FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLACK));
-                titulo.Alignment = Element.ALIGN_CENTER;
-                titulo.SpacingAfter = 15f;
+                // Título
+                var titulo = new Paragraph(
+                    $"Relatório de Entregas - {periodo?.ToUpper() ?? "GERAL"}",
+                    FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLACK))
+                {
+                    Alignment = Element.ALIGN_CENTER,
+                    SpacingAfter = 15f
+                };
                 doc.Add(titulo);
 
-                // Cria tabela com 5 colunas
-                var tabela = new PdfPTable(5) { WidthPercentage = 100 };
-                tabela.SetWidths(new float[] { 2.5f, 3f, 2f, 2f, 2f });
+                // TABELA: agora com 4 colunas
+                var tabela = new PdfPTable(4)
+                {
+                    WidthPercentage = 100
+                };
 
-                // Cabeçalho colorido
+                tabela.SetWidths(new float[] { 3f, 3f, 2f, 2f });
+
+                // Cabeçalho
                 var headerFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 11, BaseColor.WHITE);
                 BaseColor headerColor = new BaseColor(52, 73, 94);
 
                 void AddHeader(string text)
                 {
-                    var cell = new PdfPCell(new Phrase(text, headerFont))
+                    tabela.AddCell(new PdfPCell(new Phrase(text, headerFont))
                     {
                         BackgroundColor = headerColor,
                         HorizontalAlignment = Element.ALIGN_CENTER,
                         Padding = 6
-                    };
-                    tabela.AddCell(cell);
+                    });
                 }
 
                 AddHeader("Cliente");
                 AddHeader("Endereço");
                 AddHeader("Data Agendada");
-                AddHeader("Pacote");
-                AddHeader("Status");
+                AddHeader("Valor");
 
                 // Linhas
                 var cellFont = FontFactory.GetFont(FontFactory.HELVETICA, 10, BaseColor.BLACK);
+
                 foreach (var e in lista)
                 {
                     tabela.AddCell(new Phrase(e.Cliente?.Nome ?? "-", cellFont));
                     tabela.AddCell(new Phrase(e.Cliente?.Endereco ?? "-", cellFont));
                     tabela.AddCell(new Phrase(e.DataAgendada.ToString("dd/MM/yyyy HH:mm"), cellFont));
-               
-                    tabela.AddCell(new Phrase(e.Status ?? "-", cellFont));
+
+                    string valor = e.Orcamento?.ToString("C2") ?? "R$ 0,00";
+                    tabela.AddCell(new Phrase(valor, cellFont));
                 }
 
                 doc.Add(tabela);
                 doc.Close();
 
-                return File(stream.ToArray(), "application/pdf", $"Relatorio_{periodo}_{DateTime.Now:yyyyMMddHHmm}.pdf");
+                return File(
+                    stream.ToArray(),
+                    "application/pdf",
+                    $"Relatorio_{periodo}_{DateTime.Now:yyyyMMddH}.pdf"
+                );
             }
         }
+
     }
 }
     

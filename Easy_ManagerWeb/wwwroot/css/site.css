@@ -20,3 +20,55 @@ html {
 body {
   margin-bottom: 60px;
 }
+/* ===============  RESPONSIVIDADE GLOBAL  =============== */
+
+/* Imagens se ajustarem ao tamanho da tela */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Tabelas com rolagem horizontal no mobile */
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* Remove quebras e apertos em colunas pequenas */
+@media (max-width: 768px) {
+
+    /* Sidebar some no mobile */
+    .sidebar {
+        display: none !important;
+    }
+
+    /* Conteúdo ocupa 100% da tela */
+    .content-area {
+        width: 100% !important;
+        margin-left: 0 !important;
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+
+    /* Garantir que colunas empilhem corretamente */
+    .col-md-3,
+    .col-md-4,
+    .col-md-5,
+    .col-md-6,
+    .col-md-7,
+    .col-md-8,
+    .col-md-9,
+    .col-md-10 {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Ajustar header */
+    header.navbar {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+
+    main {
+        padding: 15px !important;
+    }
+}
