@@ -52,15 +52,14 @@ builder.Services.AddSession(options =>
 });
 
 var app = builder.Build();
+// Aplica cultura pt-BR no site inteiro
+app.UseRequestLocalization(localizationOptions);
 
-// Static files e rotas
 app.UseStaticFiles();
 app.UseRouting();
 
-// Sessão precisa ser inicializada antes do uso
 app.UseSession();
 
-// Adiciona autenticação/autorização (mesmo que não use ainda)
 app.UseAuthentication();
 app.UseAuthorization();
 
