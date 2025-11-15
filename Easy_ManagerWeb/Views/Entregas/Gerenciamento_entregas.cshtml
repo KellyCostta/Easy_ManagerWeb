@@ -53,7 +53,25 @@
                                 <td>@(entrega.Cliente?.Nome ?? "Sem Cliente")</td>
                                     <td>@entrega.Endereco</td>
                                 <td>@entrega.DataAgendada.ToString("dd/MM/yyyy")</td>
-                                <td>@entrega.Status</td>
+                                <td>
+                                    @if (entrega.Status == "Pendente")
+                                    {
+                                        <a asp-action="AlterarStatus"
+                                           asp-route-id="@entrega.Id"
+                                           class="btn btn-secondary btn-sm"
+                                           title="Marcar como Entregue">
+                                             Pendente
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check2-circle"></i> Entregue
+                                        </span>
+                                    }
+                                </td>
+
+
                                 <td>@(entrega.Orcamento.HasValue? entrega.Orcamento.Value.ToString("C") : "R$ 0,00")</td>
                                 <td>
                                     <a asp-action="Editar_Entrega" asp-route-id="@entrega.Id" class="btn btn-warning btn-sm" title="Editar Cliente">

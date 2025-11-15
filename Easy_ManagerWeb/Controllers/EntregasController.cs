@@ -415,6 +415,19 @@ namespace Easy_ManagerWeb.Controllers
             }
         }
 
+        public IActionResult AlterarStatus(int id)
+        {
+            var entrega = _context.Entregas.FirstOrDefault(e => e.Id == id);
+
+            if (entrega == null)
+                return NotFound();
+
+            entrega.Status = "Entregue";
+            _context.SaveChanges();
+
+            return RedirectToAction("Gerenciamento_entregas"); // ou o nome da sua lista
+        }
+
 
     }
 }
