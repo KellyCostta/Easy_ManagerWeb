@@ -47,7 +47,7 @@ namespace Easy_ManagerWeb.Controllers
         {
             var entregas = _context.Entregas
                 .Include(e => e.Cliente)
-                .Include(e => e.Pacote)
+                .Include(e => e.Pacotes)
                 .ToList();
 
             return View(entregas);
@@ -88,25 +88,41 @@ namespace Easy_ManagerWeb.Controllers
         // 🔹 POST: Nova entrega
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [HttpPost]
         public IActionResult Nova_entrega(Entrega entrega)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var pacote = _context.Pacotes.FirstOrDefault(p => p.Id == entrega.PacoteId);
+                ViewBag.Clientes = new SelectList(_context.Clientes.ToList(), "Id", "Nome", entrega.ClienteId);
+                return View(entrega);
+            }
 
-                double valorBasePeso = 5.0;
-                double valorBaseKm = 5.0;
+            // BUSCAR TODOS OS PACOTES SELECIONADOS
+            var pacotes = _context.Pacotes
+                .Where(p => entrega.PacotesIds.Contains(p.Id))
+                .ToList();
 
+            if (pacotes.Count == 0)
+            {
+                ModelState.AddModelError("", "Selecione ao menos um pacote.");
+                ViewBag.Clientes = new SelectList(_context.Clientes.ToList(), "Id", "Nome", entrega.ClienteId);
+                return View(entrega);
+            }
+
+            //--------------------------------------
+            // 1. SOMA DOS PACOTES (PESO + TAMANHO)
+            //--------------------------------------
+            double valorTotalPacotes = 0;
+            double valorBasePeso = 5.0;
+
+            foreach (var pacote in pacotes)
+            {
                 double valorPeso = 0;
-                double valorTempo = 0;
                 double valorTamanho = 0;
-                double valorDistancia = 0;
                 double pesoInformado = 0;
-                double tempoInformado = double.Parse(entrega.Tempo) ;
 
-                double distancia = entrega.Distancia ?? 0;
-
-                if (pacote != null && double.TryParse(pacote.Peso, out pesoInformado))
+                // PESO
+                if (double.TryParse(pacote.Peso, out pesoInformado))
                 {
                     if (pesoInformado <= 1)
                         valorPeso = valorBasePeso;
@@ -114,46 +130,69 @@ namespace Easy_ManagerWeb.Controllers
                         valorPeso = valorBasePeso + (pesoInformado - 1) * 1;
                 }
 
-                switch (pacote?.Tamanho)
+                // TAMANHO
+                switch (pacote.Tamanho)
                 {
-                    case "Pequeno":
-                        valorTamanho = 1;
-                        break;
-                    case "Médio":
-                        valorTamanho = 3;
-                        break;
-                    case "Grande":
-                        valorTamanho = 5;
-                        break;
+                    case "Pequeno": valorTamanho = 1; break;
+                    case "Médio": valorTamanho = 3; break;
+                    case "Grande": valorTamanho = 5; break;
                 }
 
-                if (distancia <= 5)
-                    valorDistancia = valorBaseKm;
-                else
-                    valorDistancia = valorBaseKm + (distancia - 5) * 1;
-
-
-                if (tempoInformado <= 10)
-                    valorTempo = 1.0;
-                else
-                    valorTempo = 1 + (tempoInformado - 10) *0.20 ;
-
-
-                double orcamento = valorPeso + valorTamanho + valorDistancia + valorTempo;
-
-                entrega.Orcamento = Math.Round(orcamento, 2);
-                entrega.Status = "Pendente";
-
-                _context.Entregas.Add(entrega);
-                _context.SaveChanges();
-
-                return RedirectToAction("Resumo_Orcamento", new { id = entrega.Id });
+                valorTotalPacotes += (valorPeso + valorTamanho);
             }
 
-            ViewBag.Clientes = new SelectList(_context.Clientes.ToList(), "Id", "Nome", entrega.ClienteId);
-            ViewBag.Pacotes = new SelectList(_context.Pacotes.ToList(), "Id", "Tamanho", entrega.PacoteId);
-            return View(entrega);
+            //--------------------------------------
+            // 2. CALCULOS ÚNICOS DA ENTREGA
+            //--------------------------------------
+
+            double valorBaseKm = 5.0;
+            double valorDistancia = 0;
+            double valorTempo = 0;
+
+            double distancia = entrega.Distancia ?? 0;
+            double tempoInformado = double.Parse(entrega.Tempo);
+
+            // DISTÂNCIA
+            if (distancia <= 5)
+                valorDistancia = valorBaseKm;
+            else
+                valorDistancia = valorBaseKm + (distancia - 5) * 1;
+
+            // TEMPO
+            if (tempoInformado <= 10)
+                valorTempo = 1;
+            else
+                valorTempo = 1 + (tempoInformado - 10) * 0.20;
+
+            //--------------------------------------
+            // 3. ORÇAMENTO FINAL
+            //--------------------------------------
+
+            double orcamento = valorTotalPacotes + valorDistancia + valorTempo;
+
+            entrega.Orcamento = Math.Round(orcamento, 2);
+            entrega.Status = "Pendente";
+
+            // SALVA A ENTREGA
+            _context.Entregas.Add(entrega);
+            _context.SaveChanges();
+
+            //--------------------------------------
+            // 4. RELACIONA PACOTES À ENTREGA
+            //--------------------------------------
+
+            foreach (var pacote in pacotes)
+            {
+                pacote.EntregaId = entrega.Id;
+                _context.Pacotes.Update(pacote);
+            }
+
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Resumo_Orcamento", new { id = entrega.Id });
         }
+
 
 
         // 🔹 RESUMO DO ORÇAMENTO
@@ -161,7 +200,7 @@ namespace Easy_ManagerWeb.Controllers
         {
             var entrega = _context.Entregas
                 .Include(e => e.Cliente)
-                .Include(e => e.Pacote)
+                .Include(e => e.Pacotes)
                 .FirstOrDefault(e => e.Id == id);
 
             if (entrega == null)
@@ -170,60 +209,137 @@ namespace Easy_ManagerWeb.Controllers
             return View(entrega);
         }
 
-        // 🔹 EDITAR ENTREGA
-
+        //GET Editar Entrega
         public IActionResult Editar_Entrega(int id)
         {
-            var entrega = _context.Entregas.FirstOrDefault(e => e.Id == id);
+            var entrega = _context.Entregas
+                .Include(e => e.Pacotes) // carrega pacotes já vinculados
+                .FirstOrDefault(e => e.Id == id);
+
             if (entrega == null) return NotFound();
 
-            ViewBag.Pacotes = new SelectList(
-                _context.Pacotes
-                .Select(p => new {
+            // Lista de pacotes disponíveis (não vinculados ou vinculados a esta entrega)
+            var pacotes = _context.Pacotes
+                .Where(p => p.EntregaId == null || p.EntregaId == entrega.Id)
+                .Select(p => new
+                {
                     p.Id,
                     Nome = p.Tamanho + " - " + p.Peso + " Kg"
-                }).ToList(),
+                })
+                .ToList();
+
+            // IDs dos pacotes atualmente associados
+            var pacotesSelecionados = entrega.Pacotes.Select(p => p.Id).ToList();
+
+            // MultiSelectList com seleção prévia
+            ViewBag.Pacotes = new MultiSelectList(
+                pacotes,
                 "Id",
                 "Nome",
-                entrega.PacoteId
+                pacotesSelecionados
             );
 
-            ViewBag.Clientes = new SelectList(_context.Clientes.ToList(), "Id", "Nome", entrega.ClienteId);
+            ViewBag.Clientes = new SelectList(
+                _context.Clientes,
+                "Id",
+                "Nome",
+                entrega.ClienteId
+            );
 
             return View(entrega);
         }
+
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Editar_Entrega(Entrega entrega)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var pacote = _context.Pacotes.FirstOrDefault(p => p.Id == entrega.PacoteId);
+                ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nome", entrega.ClienteId);
+                ViewBag.Pacotes = new MultiSelectList(
+                    _context.Pacotes
+                        .Where(p => p.EntregaId == null || entrega.PacotesIds.Contains(p.Id))
+                        .Select(p => new { p.Id, Nome = p.Tamanho + " - " + p.Peso + " Kg" }),
+                    "Id",
+                    "Nome",
+                    entrega.PacotesIds
+                );
 
-                double valorBase = 5.0;
-                double valorPorKm = 1.8;
-                double valorPorGrama = 0.002;
-
-                double distancia = entrega.Distancia ?? 0;
-                double pesoGramas = 0;
-
-                if (pacote != null && double.TryParse(pacote.Peso, out double pesoInformado))
-                    pesoGramas = pesoInformado;
-
-                entrega.Orcamento = Math.Round(valorBase + (distancia * valorPorKm) + (pesoGramas * valorPorGrama), 2);
-
-                _context.Entregas.Update(entrega);
-                _context.SaveChanges();
-
-                return RedirectToAction("Gerenciamento_entregas");
+                return View(entrega);
             }
 
-            ViewBag.Clientes = new SelectList(_context.Clientes.ToList(), "Id", "Nome", entrega.ClienteId);
-            ViewBag.Pacotes = new SelectList(_context.Pacotes.ToList(), "Id", "Tamanho", entrega.PacoteId);
-            return View(entrega);
+            var entregaDb = _context.Entregas
+                .Include(e => e.Pacotes) // Garantir que a lista de pacotes seja carregada
+                .FirstOrDefault(e => e.Id == entrega.Id);
+
+            if (entregaDb == null) return NotFound();
+
+            // Atualiza dados básicos
+            entregaDb.ClienteId = entrega.ClienteId;
+            entregaDb.Distancia = entrega.Distancia;
+            entregaDb.Tempo = entrega.Tempo;
+            entregaDb.DataAgendada = entrega.DataAgendada;
+
+            // ---- Atualiza pacotes vinculados ----
+            // Remove pacotes que não estão mais selecionados
+            var pacotesParaRemover = entregaDb.Pacotes
+                .Where(p => entrega.PacotesIds == null || !entrega.PacotesIds.Contains(p.Id))
+                .ToList();
+            foreach (var p in pacotesParaRemover)
+            {
+                p.EntregaId = null;
+            }
+
+            // Adiciona pacotes selecionados
+            var pacotesSelecionados = _context.Pacotes
+                .Where(p => entrega.PacotesIds != null && entrega.PacotesIds.Contains(p.Id))
+                .ToList();
+
+            foreach (var p in pacotesSelecionados)
+            {
+                p.EntregaId = entregaDb.Id;
+            }
+
+            // Atualiza navigation property
+            entregaDb.Pacotes = pacotesSelecionados;
+
+            // ---- Recalcular orçamento ----
+            double valorBasePeso = 5.0;
+            double valorBaseKm = 5.0;
+
+            double valorPesoTotal = 0;
+            double valorTamanhoTotal = 0;
+            double valorDistancia = entregaDb.Distancia <= 5 ? valorBaseKm : valorBaseKm + (entregaDb.Distancia.Value - 5);
+
+            double tempoInformado = 0;
+            double.TryParse(entregaDb.Tempo, out tempoInformado);
+            double valorTempo = tempoInformado <= 10 ? 1 : 1 + (tempoInformado - 10) * 0.20;
+
+            foreach (var p in pacotesSelecionados)
+            {
+                if (double.TryParse(p.Peso, out double pesoEmKg))
+                {
+                    valorPesoTotal += pesoEmKg <= 1 ? valorBasePeso : valorBasePeso + (pesoEmKg - 1);
+                }
+
+                switch (p.Tamanho)
+                {
+                    case "Pequeno": valorTamanhoTotal += 1; break;
+                    case "Médio": valorTamanhoTotal += 3; break;
+                    case "Grande": valorTamanhoTotal += 5; break;
+                }
+            }
+
+            entregaDb.Orcamento = Math.Round(valorPesoTotal + valorTamanhoTotal + valorDistancia + valorTempo, 2);
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Gerenciamento_entregas");
         }
+
+
 
         // 🔹 ATUALIZAR STATUS (via AJAX)
         [HttpPost]
@@ -246,7 +362,7 @@ namespace Easy_ManagerWeb.Controllers
         {
             var entrega = _context.Entregas
                 .Include(e => e.Cliente)
-                .Include(e => e.Pacote)
+                .Include(e => e.Pacotes)
                 .FirstOrDefault(e => e.Id == id);
 
             if (entrega == null)

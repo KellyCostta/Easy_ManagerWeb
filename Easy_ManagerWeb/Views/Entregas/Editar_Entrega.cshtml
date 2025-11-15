@@ -1,9 +1,10 @@
 ﻿@model Easy_ManagerWeb.Models.Entrega
+@using Microsoft.AspNetCore.Mvc.Rendering
 
 @{
     ViewData["Title"] = "Editar Entrega";
-    var clientes = (SelectList)ViewBag.Clientes;
-    var pacotes = (SelectList)ViewBag.Pacotes;
+    var clientes = ViewBag.Clientes as SelectList;
+    var pacotes = ViewBag.Pacotes as MultiSelectList;
 }
 
 <div class="card shadow-sm">
@@ -11,11 +12,8 @@
         <h4 class="mb-0">Editando Entrega #@Model.Id</h4>
     </div>
     <div class="card-body">
-
         <form asp-action="Editar_Entrega" method="post">
-
             <input type="hidden" asp-for="Id" />
-
             <input type="hidden" asp-for="Orcamento" />
 
             <div class="mb-3">
@@ -27,23 +25,50 @@
             </div>
 
             <div class="mb-3">
-                <label asp-for="PacoteId" class="form-label">Pacote/Produto</label>
-                <select asp-for="PacoteId" class="form-select" asp-items="pacotes" required>
-                    <option value="">Selecione o Pacote</option>
-                </select>
-                <span asp-validation-for="PacoteId" class="text-danger"></span>
+                <label class="form-label">Pacotes/Produtos</label>
+
+                <!-- Lista dos pacotes já vinculados -->
+                <ul id="listaPacotesSelecionados" class="list-group mb-2">
+                    @if (Model.Pacotes != null)
+                    {
+                        foreach (var p in Model.Pacotes)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                @($"{p.Tamanho} - {p.Peso} Kg")
+                                <div>
+                                    <input type="hidden" name="PacotesIds" value="@p.Id" />
+                                    <button type="button" class="btn btn-sm btn-danger btn-excluir-pacote">Excluir</button>
+                                </div>
+                            </li>
+                        }
+                    }
+                </ul>
+
+                <!-- Botão de novo pacote -->
+                <button type="button" class="btn btn-outline-secondary mb-2" data-bs-toggle="modal" data-bs-target="#modalNovoPacote">
+                    + Novo Pacote
+                </button>
+
+                <span asp-validation-for="PacotesIds" class="text-danger"></span>
             </div>
+
 
             <div class="mb-3">
                 <label asp-for="Distancia" class="form-label">Distância (em Km)</label>
-                <input asp-for="Distancia" type="number" step="0.1" class="form-control" placeholder="Distância percorrida em Km" required />
+                <input asp-for="Distancia" type="number" step="0.1" class="form-control" required />
                 <span asp-validation-for="Distancia" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="Tempo" class="form-label">Tempo Estimado (em minutos)</label>
-                <input asp-for="Tempo" class="form-control" placeholder="Ex: 2h 30min" required />
+                <input asp-for="Tempo" class="form-control" required />
                 <span asp-validation-for="Tempo" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="DataAgendada" class="form-label">Data Agendada</label>
+                <input asp-for="DataAgendada" type="date" class="form-control" required />
+                <span asp-validation-for="DataAgendada" class="text-danger"></span>
             </div>
 
             <div class="d-flex justify-content-between mt-4">
@@ -55,5 +80,93 @@
                 </button>
             </div>
         </form>
+
+        <!-- Modal Novo Pacote -->
+        <div class="modal fade" id="modalNovoPacote" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="formNovoPacote">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Novo Pacote</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Tamanho</label>
+                                <select class="form-select" id="novoPacoteTamanho" required>
+                                    <option value="">-- Selecione --</option>
+                                    <option value="Pequeno">Pequeno</option>
+                                    <option value="Médio">Médio</option>
+                                    <option value="Grande">Grande</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Peso (kg)</label>
+                                <input type="number" step="0.01" class="form-control" id="novoPacotePeso" required />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Salvar Pacote</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function atualizarListaPacotes() {
+            var lista = $('#listaPacotesSelecionados');
+            lista.empty();
+
+            $('select[asp-for="PacotesIds"] option:selected').each(function() {
+                var texto = $(this).text();
+                lista.append(
+                    `<li class="list-group-item d-flex justify-content-between align-items-center">${texto}</li>`
+                );
+            });
+        }
+
+         $(document).ready(function() {
+            $('#formNovoPacote').submit(function(e) {
+                e.preventDefault();
+
+                var pacote = {
+                    Tamanho: $('#novoPacoteTamanho').val(),
+                    Peso: $('#novoPacotePeso').val()
+                };
+
+                $.ajax({
+                    url: '/Pacotes/NovoPacoteAjax',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(pacote),
+                    success: function(data) {
+                        var texto = data.tamanho + ' - ' + data.peso + ' Kg';
+
+                        // Adiciona item visual na lista
+                        $('#listaPacotesSelecionados').append(
+                            `<li class="list-group-item d-flex justify-content-between align-items-center">
+                                ${texto}
+                                <input type="hidden" name="PacotesIds" value="${data.id}" />
+                            </li>`
+                        );
+
+                        $('#modalNovoPacote').modal('hide');
+                        $('#novoPacoteTamanho').val('');
+                        $('#novoPacotePeso').val('');
+                    },
+                    error: function() {
+                        alert('Erro ao salvar o pacote.');
+                    }
+                });
+            });
+        });
+
+    </script>
+}

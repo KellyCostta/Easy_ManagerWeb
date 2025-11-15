@@ -115,7 +115,10 @@
                                 <tr>
                                     <td>@entrega.Id</td>
                                     <td>@entrega.Cliente?.Nome</td>
-                                    <td>@entrega.Pacote?.Tamanho</td>
+                                    <td>
+                                        @(string.Join(", ", entrega.Pacotes?.Select(p => p.Tamanho) ?? new List<string>()))
+                                    </td>
+
                                     <td>@entrega.Orcamento?.ToString("C")</td>
                                     <td>
                                         <span class="badge @(entrega.Status == "Entregue" ? "bg-success" : entrega.Status == "Em Rota" ? "bg-warning text-dark" : "bg-secondary")">

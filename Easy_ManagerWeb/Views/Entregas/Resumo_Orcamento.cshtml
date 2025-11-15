@@ -9,9 +9,26 @@
 
     <p><strong>Cliente:</strong> @Model.Cliente?.Nome</p>
     <p><strong>Endereço:</strong> @Model.Cliente.Endereco</p>
-    <p><strong> Pacote</strong></p>   
-    <p><strong>Tamanho:</strong> @Model.Pacote?.Tamanho</p>
-    <p><strong>Peso:</strong> @Model.Pacote?.Peso</p>
+    <p><strong>Pacotes:</strong></p>
+
+    @if (Model.Pacotes != null && Model.Pacotes.Any())
+    {
+        <ul>
+            @foreach (var p in Model.Pacotes)
+            {
+                <li>
+                    <strong>Tamanho:</strong> @p.Tamanho —
+                    <strong>Peso:</strong> @p.Peso
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>Nenhum pacote cadastrado.</p>
+    }
+
+
     <p><strong>Entrega</strong></p>
     <p><strong>Distância:</strong> @Model.Distancia km</p>
     <p><strong>Tempo: </strong> @Model.Tempo minutos</p>

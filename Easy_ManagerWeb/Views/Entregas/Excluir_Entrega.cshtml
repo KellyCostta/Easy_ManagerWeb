@@ -21,10 +21,23 @@
                 @(Model.Cliente?.Nome ?? "Cliente não informado")
             </dd>
 
-            <dt class="col-sm-3">Pacote:</dt>
+            <dt class="col-sm-3">Pacotes:</dt>
             <dd class="col-sm-9">
-                @(Model.Pacote?.Tamanho ?? "Pacote não informado")
+                @if (Model.Pacotes != null && Model.Pacotes.Any())
+                {
+                    <ul>
+                        @foreach (var item in Model.Pacotes)
+                        {
+                            <li>@item.Tamanho - @item.Peso Kg</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <span>Nenhum pacote informado</span>
+                }
             </dd>
+
 
             <dt class="col-sm-3">Orçamento:</dt>
             <dd class="col-sm-9">

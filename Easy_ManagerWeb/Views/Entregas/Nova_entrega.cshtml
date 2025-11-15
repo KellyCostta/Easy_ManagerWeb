@@ -17,19 +17,20 @@
     </div>
 
     <div class="mb-3">
-        <label asp-for="PacoteId" class="form-label">Pacote</label>
-        <div class="input-group">
-            <select asp-for="PacoteId" class="form-select" id="selectPacote" required>
-                <option value="">-- Cadastre um pacote --</option>
-            </select>
+        <label class="form-label">Pacotes</label>
 
+        <!-- Botão que abre o modal -->
+        <button type="button" class="btn btn-outline-secondary mb-2" data-bs-toggle="modal" data-bs-target="#modalNovoPacote">
+            + Adicionar Pacote
+        </button>
 
+        <!-- LISTA DOS PACOTES INSERIDOS -->
+        <ul id="listaPacotes" class="list-group"></ul>
 
-            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalNovoPacote">
-                + Novo Pacote
-            </button>
-        </div>
+        <!-- AQUI OS IDs DOS PACOTES SERÃO SALVOS -->
+        <div id="inputsPacotes"></div>
     </div>
+
 
     <div class="mb-3">
         <label asp-for="Status" class="form-label">Status</label>
@@ -174,19 +175,25 @@
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(pacote),
-                success: function (data) {
-                    // Mostra apenas Tamanho + Peso
-                    var texto = data.tamanho + " - " + data.peso; // ex: "Pequeno - 2kg"
+        success: function (data) {
 
-                    // Limpa select para não mostrar pacotes antigos
-                    $('#selectPacote').empty();
+            var texto = "ID: " + data.id + " — " + data.tamanho + " — " + data.peso;
 
-                    // Adiciona o pacote novo e já seleciona
-                    $('#selectPacote').append(new Option(texto, data.id, true, true));
+            // Adiciona item visual na lista
+            $('#listaPacotes').append(
+                `<li class="list-group-item d-flex justify-content-between align-items-center">
+                    ${texto}
+                </li>`
+            );
 
-                    // Fecha o modal
-                    $('#modalNovoPacote').modal('hide');
-                },
+            // Adiciona input escondido para enviar no form
+            $('#inputsPacotes').append(
+                `<input type="hidden" name="PacotesIds" value="${data.id}" />`
+            );
+
+            $('#modalNovoPacote').modal('hide');
+        },
+
 
 
                 error: function () {

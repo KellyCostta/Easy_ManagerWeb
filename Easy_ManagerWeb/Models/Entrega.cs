@@ -27,10 +27,13 @@ namespace Easy_ManagerWeb.Models
         [ForeignKey("ClienteId")]
         public Cliente? Cliente { get; set; }
 
-        [Column("id_pacote")]
-        public int? PacoteId { get; set; }
-        [ForeignKey("PacoteId")]
-        public Pacote? Pacote { get; set; }
+        [NotMapped]
+        public List<int> PacotesIds { get; set; } = new List<int>();
+
+        public ICollection<Pacote> Pacotes { get; set; } = new List<Pacote>();
+
+
+
 
         [Column("orcamento")]
         [Display(Name = "Valor do Orçamento")]

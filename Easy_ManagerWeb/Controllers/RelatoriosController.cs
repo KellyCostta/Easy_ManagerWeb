@@ -288,7 +288,7 @@ namespace Easy_ManagerWeb.Controllers
             // 4. Últimas Entregas
             var ultimasEntregas = _context.Entregas
                 .Include(e => e.Cliente)
-                .Include(e => e.Pacote)
+                .Include(e => e.Pacotes)
                 .OrderByDescending(e => e.Id)
                 .Take(10)
                 .ToList();

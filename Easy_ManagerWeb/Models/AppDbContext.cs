@@ -21,10 +21,17 @@ namespace Easy_ManagerWeb.Models
         {
             base.OnModelCreating(modelBuilder);
 
-            // Garante o nome correto da tabela, independentemente do nome do DbSet
-            modelBuilder.Entity<DadosUsuario>().ToTable("usuario");
-            modelBuilder.Entity<Orcamento>().ToTable("Orcamentos");
+            // Relação Entrega → Pacotes
+            modelBuilder.Entity<Entrega>()
+                .HasMany(e => e.Pacotes)
+                .WithOne(p => p.Entrega)
+                .HasForeignKey(p => p.EntregaId)
+                .OnDelete(DeleteBehavior.SetNull); // ou Cascade, dependendo da regra
+
+            // Outras tabelas...
         }
+
+
 
     }
 

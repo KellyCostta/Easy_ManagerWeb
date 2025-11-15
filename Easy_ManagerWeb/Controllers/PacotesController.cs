@@ -15,16 +15,7 @@ namespace Easy_ManagerWeb.Controllers
             _context = context;
         }
 
-        // GET: Listar pacotes
-        public IActionResult Gerenciamento_pacotes()
-        {
-            var pacotes = _context.Pacotes
-                                  .Include(p => p.Entregas) // Pacotes com entregas
-                             
-                                  .ToList();
-
-            return View(pacotes);
-        }
+       
 
         // GET: Formulário para novo pacote
         public IActionResult Novo_pacote()
@@ -50,7 +41,6 @@ namespace Easy_ManagerWeb.Controllers
             return View(pacote);
         }
 
-        // GET: /Pacotes/Editar_Pacote/5 (Exibir formulário de edição)
         // GET: /Pacotes/Editar_Pacote/5 (Exibir formulário de edição)
         public IActionResult Editar_Pacote(int id)
         {
@@ -97,31 +87,55 @@ namespace Easy_ManagerWeb.Controllers
             return View(pacote);
         }
 
-        // POST: /Pacotes/Excluir_Pacote/5 (Executar a exclusão)
-        // ActionName para que o POST chame este método.
+
         [HttpPost, ActionName("Excluir_Pacote")]
         [ValidateAntiForgeryToken]
         public IActionResult ConfirmarExclusao(int id)
         {
             var pacote = _context.Pacotes.FirstOrDefault(p => p.Id == id);
 
-            if (pacote != null)
-            {
-                // Verifica se o pacote está em alguma entrega antes de excluir
-                var temEntregas = _context.Entregas.Any(e => e.PacoteId == id);
-                if (temEntregas)
-                {
-                    // se o pacote estiver em uso, não permite a exclusão e avisa o usuário
-                    TempData["ErroExclusao"] = "Não é possível excluir o pacote. Ele está vinculado a uma ou mais entregas.";
-                    return RedirectToAction("Gerenciamento_pacotes");
-                }
+            if (pacote == null)
+                return RedirectToAction("Gerenciamento_pacotes");
 
-                _context.Pacotes.Remove(pacote);
-                _context.SaveChanges();
+            // 1) Verifica se existe alguma Entrega que contenha esse pacote via relação Pacotes
+            bool temEntregas = _context.Entregas
+                .Any(e => e.Pacotes.Any(p => p.Id == id));
+
+            // 2) Verificação extra (legado): se sua entidade Pacote ainda tem um campo EntregaId
+            //    (por exemplo int EntregaId; ou int? EntregaId), também considera isso como vínculo.
+            try
+            {
+                // Evita exceção caso propriedade não exista; se existir e for > 0 consideramos vínculo.
+                var entregaIdProp = pacote.GetType().GetProperty("EntregaId");
+                if (!temEntregas && entregaIdProp != null)
+                {
+                    var valor = entregaIdProp.GetValue(pacote);
+                    if (valor != null)
+                    {
+                        if (int.TryParse(valor.ToString(), out int entregaId) && entregaId > 0)
+                            temEntregas = true;
+                    }
+                }
             }
+            catch
+            {
+                // se algo falhar aqui, não impede o fluxo principal — já fizemos a verificação principal acima
+            }
+
+            if (temEntregas)
+            {
+                // se o pacote estiver em uso, não permite a exclusão e avisa o usuário
+                TempData["ErroExclusao"] = "Não é possível excluir o pacote. Ele está vinculado a uma ou mais entregas.";
+                return RedirectToAction("Gerenciamento_pacotes");
+            }
+
+            // Se não está vinculado, pode excluir
+            _context.Pacotes.Remove(pacote);
+            _context.SaveChanges();
 
             return RedirectToAction("Gerenciamento_pacotes");
         }
+
 
         // POST: /Pacotes/NovoPacoteAjax
         [HttpPost]

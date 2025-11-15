@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <Content Remove="Views\Entregas\Index.cshtml" />
+    <Content Remove="Views\Pacotes\Gerenciamento_pacotes.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
