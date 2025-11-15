@@ -1,7 +1,23 @@
 ﻿using Easy_ManagerWeb.Models;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+// --- Forçar cultura brasileira ---
+var defaultCulture = new CultureInfo("pt-BR");
+defaultCulture.NumberFormat.CurrencySymbol = "R$";
+
+var localizationOptions = new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture(defaultCulture),
+    SupportedCultures = new List<CultureInfo> { defaultCulture },
+    SupportedUICultures = new List<CultureInfo> { defaultCulture }
+};
+
+
 
 // Conexão MySQL
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
