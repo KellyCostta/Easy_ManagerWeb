@@ -375,6 +375,15 @@ namespace Easy_ManagerWeb.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult ConfirmarExclusao(int id)
         {
+            // 1️⃣ Deletar pacotes vinculados à entrega
+            var pacotes = _context.Pacotes.Where(p => p.EntregaId == id).ToList();
+            if (pacotes.Any())
+            {
+                _context.Pacotes.RemoveRange(pacotes);
+                _context.SaveChanges();
+            }
+
+            // 2️⃣ Deletar a entrega
             var entrega = _context.Entregas.FirstOrDefault(e => e.Id == id);
             if (entrega != null)
             {

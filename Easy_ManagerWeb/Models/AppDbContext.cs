@@ -26,9 +26,9 @@ namespace Easy_ManagerWeb.Models
                 .HasMany(e => e.Pacotes)
                 .WithOne(p => p.Entrega)
                 .HasForeignKey(p => p.EntregaId)
-                .OnDelete(DeleteBehavior.SetNull); // ou Cascade, dependendo da regra
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // Outras tabelas...
+
         }
 
 
