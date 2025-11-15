@@ -21,8 +21,7 @@ namespace Easy_ManagerWeb.Models
         public string? EnderecoCliente { get; set; }
 
         // Dados do pacote
-        [Required]
-        public string? DescricaoPacote { get; set; }
+
         [Required]
         public required string Tamanho { get; set; }
         public string? Peso { get; set; } // gramas

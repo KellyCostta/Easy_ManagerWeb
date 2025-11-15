@@ -4,7 +4,7 @@
     ViewData["Title"] = "Orçamentos Salvos";
 }
 
-<h2>Orçamentos Salvos</h2>
+<h2>Lista de Orçamentos</h2>
 
 @if (TempData["Mensagem"] != null)
 {
@@ -15,7 +15,6 @@
     <thead>
         <tr>
             <th>Cliente</th>
-            <th>Pacote</th>
             <th>Tamanho</th>
             <th>Peso (g)</th>
             <th>Distância (km)</th>
@@ -31,7 +30,6 @@
         {
             <tr>
                 <td>@item.NomeCliente</td>
-                <td>@item.DescricaoPacote</td>
                 <td>@item.Tamanho</td>
                 <td>@item.Peso</td>
                 <td>@item.Distancia</td>
