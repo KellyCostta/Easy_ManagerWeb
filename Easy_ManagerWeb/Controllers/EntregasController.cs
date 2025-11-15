@@ -53,17 +53,37 @@ namespace Easy_ManagerWeb.Controllers
             return View(entregas);
         }
 
-        // 🔹 GET: Nova entrega (pode vir de um orçamento)
+
+        // GET: NovaEntrega
         public IActionResult Nova_entrega()
         {
+            // Clientes: mostrar Nome + Telefone
+            ViewBag.Clientes = new SelectList(
+                _context.Clientes
+                    .Select(c => new {
+                        c.Id,
+                        Texto = c.Nome + " - " + c.Telefone
+                    })
+                    .ToList(),
+                "Id",
+                "Texto"
+            );
 
-            ViewBag.Clientes = new SelectList(_context.Clientes.ToList(), "Id", "Nome");
-            ViewBag.Pacotes = new SelectList(_context.Pacotes.ToList(), "Id", "Tamanho");
-
-
+            // Pacotes: mostrar Tamanho + Peso (não descrição)
+            ViewBag.Pacotes = new SelectList(
+                _context.Pacotes
+                    .Select(p => new {
+                        p.Id,
+                        Texto = p.Tamanho + " - " + p.Peso   // ex: "Pequeno - 2kg"
+                    })
+                    .ToList(),
+                "Id",
+                "Texto"
+            );
 
             return View();
         }
+
 
         // 🔹 POST: Nova entrega
         [HttpPost]

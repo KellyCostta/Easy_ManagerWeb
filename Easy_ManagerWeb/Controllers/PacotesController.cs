@@ -134,8 +134,13 @@ namespace Easy_ManagerWeb.Controllers
             _context.Pacotes.Add(pacote);
             _context.SaveChanges();
 
-            // Retorna JSON com ID e Descrição para atualizar o select
-            return Json(new { id = pacote.Id, descricao = pacote.Tamanho });
+            // Retorna JSON com ID, Tamanho e Peso
+            return Json(new
+            {
+                id = pacote.Id,
+                tamanho = pacote.Tamanho,
+                peso = pacote.Peso
+            });
         }
 
 
