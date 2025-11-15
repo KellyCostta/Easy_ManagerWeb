@@ -12,17 +12,25 @@
         <h5 class="text-danger mb-3">Tem certeza que deseja excluir esta entrega?</h5>
 
         <dl class="row">
+
             <dt class="col-sm-3">ID da Entrega:</dt>
             <dd class="col-sm-9">@Model.Id</dd>
 
             <dt class="col-sm-3">Cliente:</dt>
-            <dd class="col-sm-9">@Model.Cliente?.Nome</dd>
+            <dd class="col-sm-9">
+                @(Model.Cliente?.Nome ?? "Cliente não informado")
+            </dd>
 
             <dt class="col-sm-3">Pacote:</dt>
-            <dd class="col-sm-9">@Model.Pacote?.Tamanho</dd>
+            <dd class="col-sm-9">
+                @(Model.Pacote?.Tamanho ?? "Pacote não informado")
+            </dd>
 
             <dt class="col-sm-3">Orçamento:</dt>
-            <dd class="col-sm-9">@Model.Orcamento?.ToString("C")</dd>
+            <dd class="col-sm-9">
+                @(Model.Orcamento.HasValue? Model.Orcamento.Value.ToString("C") : "Não calculado")
+            </dd>
+
         </dl>
 
         <form asp-action="Excluir_Entrega" method="post">
@@ -33,6 +41,7 @@
                 <a asp-action="Gerenciamento_entregas" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Cancelar
                 </a>
+
                 <button type="submit" class="btn btn-danger btn-lg">
                     <i class="bi bi-trash-fill"></i> Sim, Excluir Definitivamente
                 </button>

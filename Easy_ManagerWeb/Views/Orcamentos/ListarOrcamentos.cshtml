@@ -41,9 +41,12 @@
                 <td>@item.DataCadastro.ToString("dd/MM/yyyy HH:mm")</td>
                 <td>
                     <!-- Botão Aceitar -->
-                    <a asp-controller="Entregas" asp-action="CreateFromOrcamento" asp-route-id="@item.Id" class="btn btn-success btn-sm">
-                        Aceitar e Criar Entrega
+                    <a asp-controller="Orcamentos" asp-action="Detalhes"
+                       asp-route-id="@item.Id"
+                       class="btn btn-primary btn-sm">
+                        Ver Detalhes
                     </a>
+
 
 
                     <!-- Botão Deletar -->

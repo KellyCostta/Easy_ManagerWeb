@@ -1,0 +1,44 @@
+﻿@model Easy_ManagerWeb.Models.Orcamento
+
+<h2>Detalhes do Orçamento</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Cliente</th>
+        <td>@Model.NomeCliente</td>
+    </tr>
+    <tr>
+        <th>Pacote</th>
+        <td>@Model.DescricaoPacote</td>
+    </tr>
+    <tr>
+        <th>Tamanho</th>
+        <td>@Model.Tamanho</td>
+    </tr>
+    <tr>
+        <th>Peso</th>
+        <td>@Model.Peso g</td>
+    </tr>
+    <tr>
+        <th>Distância</th>
+        <td>@Model.Distancia km</td>
+    </tr>
+    <tr>
+        <th>Tempo Estimado</th>
+        <td>@Model.Tempo min</td>
+    </tr>
+    <tr>
+        <th>Valor do Orçamento</th>
+        <td>R$ @Model.ValorOrcamento.ToString("F2")</td>
+    </tr>
+    <tr>
+        <th>Status</th>
+        <td>@Model.Status</td>
+    </tr>
+    <tr>
+        <th>Data</th>
+        <td>@Model.DataCadastro</td>
+    </tr>
+</table>
+
+<a asp-action="ListarOrcamentos" class="btn btn-secondary">Voltar</a>

@@ -113,7 +113,7 @@ namespace Easy_ManagerWeb.Controllers
                     valorDistancia = valorBaseKm + (distancia - 5) * 1;
 
 
-                if (tempoInformado <= 1)
+                if (tempoInformado <= 10)
                     valorTempo = 1.0;
                 else
                     valorTempo = 1 + (tempoInformado - 10) *0.20 ;
@@ -151,15 +151,28 @@ namespace Easy_ManagerWeb.Controllers
         }
 
         // 🔹 EDITAR ENTREGA
+
         public IActionResult Editar_Entrega(int id)
         {
             var entrega = _context.Entregas.FirstOrDefault(e => e.Id == id);
             if (entrega == null) return NotFound();
 
+            ViewBag.Pacotes = new SelectList(
+                _context.Pacotes
+                .Select(p => new {
+                    p.Id,
+                    Nome = p.Tamanho + " - " + p.Peso + " Kg"
+                }).ToList(),
+                "Id",
+                "Nome",
+                entrega.PacoteId
+            );
+
             ViewBag.Clientes = new SelectList(_context.Clientes.ToList(), "Id", "Nome", entrega.ClienteId);
-            ViewBag.Pacotes = new SelectList(_context.Pacotes.ToList(), "Id", "Descricao", entrega.PacoteId);
+
             return View(entrega);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -188,7 +201,7 @@ namespace Easy_ManagerWeb.Controllers
             }
 
             ViewBag.Clientes = new SelectList(_context.Clientes.ToList(), "Id", "Nome", entrega.ClienteId);
-            ViewBag.Pacotes = new SelectList(_context.Pacotes.ToList(), "Id", "Descricao", entrega.PacoteId);
+            ViewBag.Pacotes = new SelectList(_context.Pacotes.ToList(), "Id", "Tamanho", entrega.PacoteId);
             return View(entrega);
         }
 
@@ -381,6 +394,7 @@ namespace Easy_ManagerWeb.Controllers
                 );
             }
         }
+
 
     }
 }

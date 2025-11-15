@@ -1,32 +1,62 @@
-/* MOBILE */
-@media (max-width: 767px) {
+﻿/* =======================
+   MOBILE FIRST (padrão)
+   ======================= */
 
-    /* Nada de esconder com display:none */
-    .sidebar {
-        position: fixed !important;
-        top: 0;
-        left: 0;
-        height: 100vh;
-    }
-
-    /* Conte�do ocupa a tela inteira quando sidebar est� fechada */
-    .content-area {
-        margin-left: 0 !important;
-        width: 100% !important;
-    }
+.sidebar {
+    width: 250px; /* largura do menu */
 }
 
-/* DESKTOP */
+.content-area {
+    margin-left: 0; /* no mobile conteúdo ocupa 100% */
+}
+
+/* =======================
+   DESKTOP (>=768px)
+   ======================= */
 @media (min-width: 768px) {
 
-    /* Sidebar fixa no desktop */
+    /* Offcanvas some e vira menu fixo */
     .offcanvas-md-none {
-        visibility: visible !important;
+        position: fixed !important;
         transform: none !important;
-        border-right: 1px solid rgba(0,0,0,.125);
-        position: sticky !important;
+        visibility: visible !important;
         top: 0;
+        left: 0;
+        bottom: 0;
         height: 100vh;
-        padding: 0;
+        display: block !important;
+    }
+
+    /* Sidebar fixa com 250px */
+    #sidebar {
+        width: 250px;
+        display: block !important;
+        border-right: 1px solid #ddd;
+        z-index: 1030;
+    }
+
+    /* Conteúdo deslocado */
+    .content-area {
+        margin-left: 250px !important;
+        width: calc(100% - 250px);
+    }
+
+    /* Botão de abrir menu some no desktop */
+    .btn[data-bs-toggle="offcanvas"] {
+        display: none;
     }
 }
+.titulo-sistema {
+    font-weight: bold;
+    font-size: 1.4rem; /* opcional, deixa mais bonito */
+}
+
+    .titulo-sistema .dbs {
+        color: black;
+        font-weight: bold;
+    }
+
+    .titulo-sistema .delivery {
+        color: red;
+        font-weight: bold;
+    }

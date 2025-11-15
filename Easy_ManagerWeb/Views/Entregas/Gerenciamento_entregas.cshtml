@@ -42,6 +42,7 @@
                             <th>Data Agendada</th>
                             <th>Status</th>                        
                             <th>Valor</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -54,6 +55,15 @@
                                 <td>@entrega.DataAgendada.ToString("dd/MM/yyyy")</td>
                                 <td>@entrega.Status</td>
                                 <td>@(entrega.Orcamento.HasValue? entrega.Orcamento.Value.ToString("C") : "R$ 0,00")</td>
+                                <td>
+                                    <a asp-action="Editar_Entrega" asp-route-id="@entrega.Id" class="btn btn-warning btn-sm" title="Editar Cliente">
+                                        <i class="bi bi-pencil-fill"></i> Editar
+                                    </a>
+
+                                    <a asp-action="Excluir_Entrega" asp-route-id="@entrega.Id" class="btn btn-danger btn-sm" title="Excluir Cliente">
+                                        <i class="bi bi-trash-fill"></i> Excluir
+                                    </a>
+                                </td>
                             </tr>
                         }
                         <tr class="fw-bold bg-light">

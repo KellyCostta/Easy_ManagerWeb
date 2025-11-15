@@ -30,11 +30,6 @@
     <hr />
 
     <div class="mb-3">
-        <label class="form-label">Descrição do Pacote</label>
-        <input type="text" class="form-control" name="DescricaoPacote" placeholder="Ex: Documento, caixa pequena..." required />
-    </div>
-
-    <div class="mb-3">
         <label class="form-label">Tamanho</label>
         <select class="form-select" name="Tamanho" id="tamanho" required>
             <option value="">-- Selecione o tamanho --</option>
@@ -92,48 +87,76 @@
 @section Scripts {
     <script>
         // Função de cálculo do orçamento
-        function calcularOrcamento(distancia, tamanho, peso) {
-            let base = 5; // taxa base
-            let valorKm = 2.5; // valor por km
-            let adicionalTamanho = 0;
-            let adicionalPeso = 0;
+               function calcularOrcamento(distancia, tamanho, peso, tempo) {
 
-            switch (tamanho) {
-                case "Pequeno": adicionalTamanho = 0; break;
-                case "Médio": adicionalTamanho = 10; break;
-                case "Grande": adicionalTamanho = 20; break;
+            let valorBasePeso = 5.0;
+            let valorBaseKm = 5.0;
+
+            let valorPeso = 0;
+            let valorTempo = 0;
+            let valorTamanho = 0;
+            let valorDistancia = 0;
+
+            // --- PESO ---
+            if (peso <= 1) {
+                valorPeso = valorBasePeso;
+            } else {
+                valorPeso = valorBasePeso + ((peso - 1) * 1);
             }
 
-            // Adiciona R$ 0,50 por cada 1000g (1kg)
-            adicionalPeso = (peso / 1000) * 0.5;
+            // --- TAMANHO ---
+            switch (tamanho) {
+                case "Pequeno": valorTamanho = 1; break;
+                case "Médio": valorTamanho = 3; break;
+                case "Grande": valorTamanho = 5; break;
+            }
 
-            return (base + (distancia * valorKm) + adicionalTamanho + adicionalPeso).toFixed(2);
+            // --- DISTÂNCIA ---
+            if (distancia <= 5) {
+                valorDistancia = valorBaseKm;
+            } else {
+                valorDistancia = valorBaseKm + ((distancia - 5) * 1);
+            }
+
+            // --- TEMPO ---
+            if (tempo <= 10) {
+                valorTempo = 1.0;
+            } else {
+                valorTempo = 1 + ((tempo - 10) * 0.20);
+            }
+
+            // --- SOMA FINAL ---
+            let total = valorPeso + valorTamanho + valorDistancia + valorTempo;
+
+            return total.toFixed(2);
         }
+                $('#btnCalcular').on('click', function () {
 
-        // Botão de cálculo do orçamento
-        $('#btnCalcular').on('click', function () {
             const nome = $('input[name="NomeCliente"]').val();
             const telefone = $('input[name="TelefoneCliente"]').val();
             const endereco = $('input[name="EnderecoCliente"]').val();
-            const desc = $('input[name="DescricaoPacote"]').val();
+
+
             const tamanho = $('#tamanho').val();
             const peso = parseFloat($('#peso').val()) || 0;
-            const distancia = parseFloat($('#distancia').val());
-            const tempo = $('#tempo').val();
+            const distancia = parseFloat($('#distancia').val()) || 0;
+            const tempo = parseFloat($('#tempo').val()) || 0;
 
             if (!distancia || !tamanho) {
                 alert('Preencha a distância e o tamanho para calcular.');
                 return;
             }
 
-            const total = calcularOrcamento(distancia, tamanho, peso);
-            $('#valorOrcamento').val(total); // joga o valor no campo oculto
+            // agora usa a lógica idêntica ao C#
+            const total = calcularOrcamento(distancia, tamanho, peso, tempo);
+
+            $('#valorOrcamento').val(total);
 
             // Mostra o resumo
             $('#resCliente').text(nome);
             $('#resTelefone').text(telefone);
             $('#resEndereco').text(endereco);
-            $('#resDescricao').text(desc);
+
             $('#resTamanho').text(tamanho);
             $('#resPeso').text(peso);
             $('#resDistancia').text(distancia);
@@ -142,5 +165,7 @@
 
             $('#resultadoOrcamento').fadeIn();
         });
+
+
     </script>
 }
