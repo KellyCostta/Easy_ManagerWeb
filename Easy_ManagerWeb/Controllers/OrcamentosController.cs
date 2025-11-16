@@ -1,6 +1,7 @@
 ﻿using Easy_ManagerWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Bcpg;
 using System;
 using System.Linq;
 
@@ -29,19 +30,64 @@ namespace Easy_ManagerWeb.Controllers
             if (!ModelState.IsValid)
                 return View("Orcamento_Avulso", model);
 
-            // Cálculo de orçamento seguindo padrão da EntregasController
-            double valorBase = 5.0;
-            double valorPorKm = 1.8;
-            double valorPorGrama = 0.002;
+            double valorBasePeso = 5.0;
+
+  
+                double valorPeso = 0;
+                double valorTamanho = 0;
+                double pesoInformado;
+                double.TryParse(model.Peso, out pesoInformado);
+
+
+            // PESO
+
+            if (pesoInformado <= 1)
+                        valorPeso = valorBasePeso;
+                    else
+                        valorPeso = valorBasePeso + (pesoInformado - 1) * 1;
+                
+
+                // TAMANHO
+                switch (model.Tamanho)
+                {
+                    case "Pequeno": valorTamanho = 1; break;
+                    case "Médio": valorTamanho = 3; break;
+                    case "Grande": valorTamanho = 5; break;
+                }
+
+                double valorTotalPacotes = (valorPeso + valorTamanho);
+            
+
+            //--------------------------------------
+            // 2. CALCULOS ÚNICOS DA ENTREGA
+            //--------------------------------------
+
+            double valorBaseKm = 5.0;
+            double valorDistancia = 0;
+            double valorTempo = 0;
 
             double distancia = model.Distancia;
-            double pesoGramas = 0;
+            double tempoInformado = double.Parse(model.Tempo);
 
-            if (double.TryParse(model.Peso?.ToString(), out double pesoInformado))
-                pesoGramas = pesoInformado;
+            // DISTÂNCIA
+            if (distancia <= 5)
+                valorDistancia = valorBaseKm;
+            else
+                valorDistancia = valorBaseKm + (distancia - 5) * 1;
 
-            double orcamento = valorBase + (distancia * valorPorKm) + (pesoGramas * valorPorGrama);
-            model.ValorOrcamento = Math.Round((double)orcamento, 2);
+            // TEMPO
+            if (tempoInformado <= 10)
+                valorTempo = 1;
+            else
+                valorTempo = 1 + (tempoInformado - 10) * 0.20;
+
+            //--------------------------------------
+            // 3. ORÇAMENTO FINAL
+            //--------------------------------------
+
+            double orcamento = valorTotalPacotes + valorDistancia + valorTempo;
+
+            model.ValorOrcamento = Math.Round(orcamento, 2);
 
             model.Status = "Em Potencial";
             model.DataCadastro = DateTime.Now;

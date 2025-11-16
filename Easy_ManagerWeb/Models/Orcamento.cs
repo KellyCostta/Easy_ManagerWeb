@@ -7,12 +7,6 @@ namespace Easy_ManagerWeb.Models
     {
         [Key]
         public int Id { get; set; }
-        public int? ClienteId { get; set; }
-        public Cliente? Cliente { get; set; }
-
-        public int? PacoteId { get; set; }
-        public Pacote? Pacote { get; set; }
-
 
         // Dados do cliente
         [Required]

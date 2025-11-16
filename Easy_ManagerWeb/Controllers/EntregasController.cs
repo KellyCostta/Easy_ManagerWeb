@@ -26,21 +26,6 @@ namespace Easy_ManagerWeb.Controllers
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        // 🔹 CHAMADO QUANDO ACEITA UM ORÇAMENTO
-        public IActionResult CreateFromOrcamento(int id)
-        {
-            var orcamento = _context.Orcamentos
-                .FirstOrDefault(o => o.Id == id);
-
-            if (orcamento == null)
-            {
-                TempData["Erro"] = $"Orçamento com ID {id} não encontrado.";
-                return RedirectToAction("ListarOrcamentos", "Orcamentos");
-            }
-
-            // 🔁 Redireciona para Nova_entrega com o ID do orçamento
-            return RedirectToAction("Nova_entrega", new { orcamentoId = id });
-        }
 
         // 🔹 LISTAGEM DE ENTREGAS
         public IActionResult Gerenciamento_entregas()
