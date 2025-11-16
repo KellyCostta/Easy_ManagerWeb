@@ -1,4 +1,5 @@
 ﻿using Easy_ManagerWeb.Models;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
@@ -21,24 +22,30 @@ var localizationOptions = new RequestLocalizationOptions
 
 // Conexão MySQL
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))); builder.Services.AddDbContext<AppDbContext>(options =>
+
+builder.Services.AddDbContextPool<AppDbContext>(options =>
     options.UseMySql(
         connectionString,
         ServerVersion.AutoDetect(connectionString),
         mysqlOptions =>
         {
             mysqlOptions.EnableRetryOnFailure(
-                maxRetryCount: 5,           // tenta novamente até 5 vezes
+                maxRetryCount: 5,
                 maxRetryDelay: TimeSpan.FromSeconds(10),
                 errorNumbersToAdd: null
             );
-        })
+        }
+    )
 );
+
 
 
 // Controllers e Views
 builder.Services.AddControllersWithViews();
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(@"./keys"))
+    .SetApplicationName("Easy_ManagerWeb");
+
 
 // Configura sessão
 builder.Services.AddSession(options =>

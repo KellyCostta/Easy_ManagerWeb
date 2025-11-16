@@ -4,10 +4,18 @@
     ViewData["Title"] = "Gerenciamentos de Entregas";
 
     double totalVendas = 0;
+    double totalCanceladas = 0;
+
     foreach (var e in Model)
     {
-        totalVendas += e.Orcamento ?? 0;
+        if (e.Status == "Cancelada")
+            totalCanceladas += e.Orcamento ?? 0;
+        else
+            totalVendas += e.Orcamento ?? 0;
     }
+
+    double totalFinal = totalVendas - totalCanceladas;
+
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -49,19 +57,23 @@
                         @foreach (var entrega in Model)
                         {
                             <tr onclick="window.location.href='@Url.Action("Resumo_Orcamento", "Entregas", new { id = entrega.Id })'" style="cursor:pointer;">
-                           
                                 <td>@(entrega.Cliente?.Nome ?? "Sem Cliente")</td>
-                                    <td>@entrega.Endereco</td>
+                                <td>@entrega.Endereco</td>
                                 <td>@entrega.DataAgendada.ToString("dd/MM/yyyy")</td>
                                 <td>
                                     @if (entrega.Status == "Pendente")
                                     {
                                         <a asp-action="AlterarStatus"
                                            asp-route-id="@entrega.Id"
-                                           class="btn btn-secondary btn-sm"
-                                           title="Marcar como Entregue">
-                                             Pendente
+                                           class="btn btn-secondary btn-sm">
+                                            Pendente
                                         </a>
+                                    }
+                                    else if (entrega.Status == "Cancelada")
+                                    {
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-x-circle"></i> Cancelada
+                                        </span>
                                     }
                                     else
                                     {
@@ -71,25 +83,35 @@
                                     }
                                 </td>
 
-
                                 <td>@(entrega.Orcamento.HasValue? entrega.Orcamento.Value.ToString("C") : "R$ 0,00")</td>
                                 <td>
-                                    <a asp-action="Editar_Entrega" asp-route-id="@entrega.Id" class="btn btn-warning btn-sm" title="Editar Cliente">
+                                    <a asp-action="Editar_Entrega" asp-route-id="@entrega.Id" class="btn btn-warning btn-sm">
                                         <i class="bi bi-pencil-fill"></i> Editar
                                     </a>
 
-                                    <a asp-action="Excluir_Entrega" asp-route-id="@entrega.Id" class="btn btn-danger btn-sm" title="Excluir Cliente">
+                                    <a asp-action="Excluir_Entrega" asp-route-id="@entrega.Id" class="btn btn-danger btn-sm">
                                         <i class="bi bi-trash-fill"></i> Excluir
+                                    </a>
+
+                                    <a asp-action="CancelarEntrega"
+                                       asp-route-id="@entrega.Id"
+                                       class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-x-circle"></i> Cancelar
                                     </a>
                                 </td>
                             </tr>
                         }
-                        <tr class="fw-bold bg-light">
-                            <td colspan="3" class="text-end">Total:</td>
-                            <td>@totalVendas.ToString("C")</td>
-                        </tr>
                     </tbody>
+
                 </table>
+
+
+                <div class="mt-3 p-3 bg-light border rounded">
+                    <div><strong>Total Entregas:</strong> @totalVendas.ToString("C")</div>
+                    <div class="text-danger"><strong>Total Canceladas:</strong> - @totalCanceladas.ToString("C")</div>
+                    <div><strong>Total Final:</strong> @totalFinal.ToString("C")</div>
+                </div>
+
             </div>
         }
     </div>

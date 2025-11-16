@@ -45,12 +45,18 @@ namespace Easy_ManagerWeb.Controllers
         // 🔹 LISTAGEM DE ENTREGAS
         public IActionResult Gerenciamento_entregas()
         {
-            var entregas = _context.Entregas
-                .Include(e => e.Cliente)
-                .Include(e => e.Pacotes)
-                .ToList();
+
+            var entregas = _context.Entregas.ToList();
+
+            int totalEntregas = entregas.Count;
+            int totalCanceladas = entregas.Count(e => e.Status == "Cancelada");
+            int totalFinal = totalEntregas - totalCanceladas;
+
+            ViewBag.TotalFinal = totalFinal;
 
             return View(entregas);
+        
+
         }
 
 
@@ -552,6 +558,21 @@ namespace Easy_ManagerWeb.Controllers
 
             return RedirectToAction("Gerenciamento_entregas"); // ou o nome da sua lista
         }
+
+        public IActionResult CancelarEntrega(int id)
+        {
+            var entrega = _context.Entregas.FirstOrDefault(e => e.Id == id);
+
+            if (entrega == null)
+                return NotFound();
+
+            entrega.Status = "Cancelada"; // <<< Aqui atualiza o status
+            _context.SaveChanges();
+
+            TempData["Mensagem"] = "Entrega cancelada com sucesso!";
+            return RedirectToAction("Gerenciamento_entregas");
+        }
+
 
 
     }
