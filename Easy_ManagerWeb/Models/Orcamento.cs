@@ -24,11 +24,11 @@ namespace Easy_ManagerWeb.Models
 
         [Required]
         public required string Tamanho { get; set; }
-        public string? Peso { get; set; } // gramas
+        public string? Peso { get; set; } 
 
         // Dados da entrega
         [Required]
-        public double Distancia { get; set; } // km
+        public double Distancia { get; set; } 
         public required string Tempo { get; set; }
 
         [Display(Name = "Valor do Orçamento")]

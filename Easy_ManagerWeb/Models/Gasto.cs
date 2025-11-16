@@ -9,7 +9,7 @@ namespace Easy_ManagerWeb.Models
     {
         [Key]
         [Column("id_gasto")]
-        public int Id_Gasto { get; set; }
+        public int IdGasto { get; set; }
 
         [Required(ErrorMessage = "O tipo é obrigatório.")]
         [Column("tipo")]

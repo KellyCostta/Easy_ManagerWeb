@@ -12,7 +12,7 @@ namespace Easy_ManagerWeb.Models
         [Column("id_pacote")]
         public int Id { get; set; }
 
-        // Foreign key
+
         [Column("id_entrega")]
         public int? EntregaId { get; set; }
 

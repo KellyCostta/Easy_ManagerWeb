@@ -25,6 +25,7 @@
                             <th>Tipo</th>
                             <th>Valor</th>
                             <th>Data</th>
+                            <th>Ações</th>
                        
                         </tr>
                     </thead>
@@ -35,6 +36,21 @@
                                 <td>@item.Tipo</td>
                                 <td>R$ @item.Valor.ToString("F2")</td>
                                 <td>@item.DataGasto.ToShortDateString()</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm"
+                                            onclick="editarGasto(@item.IdGasto)">
+                                        <i class="bi bi-pencil"></i> Editar
+                                    </button>
+
+                                    <form asp-action="Excluir_Gasto" asp-route-id="@item.IdGasto" method="post"
+                                          onsubmit="return confirm('Tem certeza que deseja excluir este gasto?');"
+                                          style="display:inline-block">
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+
                 
                             </tr>
                         }
@@ -43,5 +59,97 @@
             </div>
         }
     </div>
+
+    <!-- Modal de Edição -->
+    <div class="modal fade" id="modalEditar" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Gasto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form id="formEditarGasto">
+                        <input type="hidden" id="editId" />
+
+                        <div class="mb-3">
+                            <label>Tipo</label>
+                            <input type="text" class="form-control" id="editTipo" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Valor</label>
+                            <input type="number" class="form-control" id="editValor" step="0.01" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Data</label>
+                            <input type="date" class="form-control" id="editData" />
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+
+                    <button type="button" class="btn btn-primary" onclick="salvarEdicao()">
+                        Salvar
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
 </div>
+@section Scripts {
+    <script>
+        function editarGasto(id) {
+
+        fetch(`/Gastos/BuscarGasto/${id}`)
+
+                .then(r => r.json())
+                .then(g => {
+                    document.getElementById("editId").value = g.idGasto;
+                    document.getElementById("editTipo").value = g.tipo;
+                    document.getElementById("editValor").value = g.valor;
+                    document.getElementById("editData").value = g.dataGasto.split("T")[0];
+
+                    // Abre o modal
+                    var modal = new bootstrap.Modal(document.getElementById('modalEditar'));
+                    modal.show();
+                });
+        }
+
+               function salvarEdicao() {
+            const data = {
+                IdGasto: document.getElementById("editId").value, 
+                Tipo: document.getElementById("editTipo").value,
+                Valor: document.getElementById("editValor").value,
+                DataGasto: document.getElementById("editData").value
+            };
+
+            fetch("/Gastos/Editar_Gasto_Ajax", {  
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+            .then(r => r.json())
+            .then(result => {
+                if (result.sucesso) {
+                    location.reload();
+                } else {
+                    alert("Erro ao salvar!");
+                }
+            });
+        }
+
+    </script>
+
+
+}
 

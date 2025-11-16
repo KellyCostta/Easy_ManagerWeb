@@ -145,7 +145,7 @@
                 const tamanhoPacote = "@ViewBag.TamanhoPacote";
                 const pesoPacote = "@ViewBag.PesoPacote";
 
-                // Preenche campos do modal de novo cliente (caso queira revisar antes de salvar)
+
                 document.getElementById("novoClienteNome").value = nomeCliente || "";
                 document.getElementById("novoClienteTelefone").value = telefoneCliente || "";
                 document.getElementById("novoClienteEndereco").value = enderecoCliente || "";
@@ -179,14 +179,13 @@
 
             var texto = "ID: " + data.id + " — " + data.tamanho + " — " + data.peso;
 
-            // Adiciona item visual na lista
+
             $('#listaPacotes').append(
                 `<li class="list-group-item d-flex justify-content-between align-items-center">
                     ${texto}
                 </li>`
             );
 
-            // Adiciona input escondido para enviar no form
             $('#inputsPacotes').append(
                 `<input type="hidden" name="PacotesIds" value="${data.id}" />`
             );

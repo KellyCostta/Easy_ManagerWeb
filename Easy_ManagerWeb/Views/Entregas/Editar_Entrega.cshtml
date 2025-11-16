@@ -27,7 +27,7 @@
             <div class="mb-3">
                 <label class="form-label">Pacotes/Produtos</label>
 
-                <!-- Lista dos pacotes já vinculados -->
+
                 <ul id="listaPacotesSelecionados" class="list-group mb-2">
                     @if (Model.Pacotes != null)
                     {
@@ -44,7 +44,6 @@
                     }
                 </ul>
 
-                <!-- Botão de novo pacote -->
                 <button type="button" class="btn btn-outline-secondary mb-2" data-bs-toggle="modal" data-bs-target="#modalNovoPacote">
                     + Novo Pacote
                 </button>
@@ -149,7 +148,8 @@
                     success: function(data) {
                         var texto = data.tamanho + ' - ' + data.peso + ' Kg';
 
-                        // Adiciona item visual na lista
+
+
                         $('#listaPacotesSelecionados').append(
                             `<li class="list-group-item d-flex justify-content-between align-items-center">
                                 ${texto}

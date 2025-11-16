@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Easy_ManagerWeb.Models
 {
-    [Table("cliente")] // nome exato da tabela no banco
+    [Table("cliente")]
     public class Cliente
     {
         [Key]
@@ -27,11 +27,10 @@ namespace Easy_ManagerWeb.Models
         [Column("endereco_cliente")]
         public string Endereco { get; set; } = string.Empty;
 
-        // [NotMapped] ignora o banco e o campo é recalculado toda vez que acessado.
+
         [NotMapped]
         public DateTime DataCadastro { get; set; } = DateTime.Now;
 
-        // Relacionamento com entregas (restante do código)
         public ICollection<Entrega>? Entregas { get; set; }
     }
 }

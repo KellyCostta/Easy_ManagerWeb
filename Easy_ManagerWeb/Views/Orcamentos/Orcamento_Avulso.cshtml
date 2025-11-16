@@ -56,7 +56,6 @@
         <input class="form-control" name="Tempo" id="tempo" placeholder="Ex: 30 min" />
     </div>
 
-    <!-- Campo oculto para guardar o valor do orçamento -->
     <input type="hidden" name="ValorOrcamento" id="valorOrcamento" />
 
     <button type="button" id="btnCalcular" class="btn btn-secondary me-2">Calcular Orçamento</button>
@@ -147,12 +146,10 @@
                 return;
             }
 
-            // agora usa a lógica idêntica ao C#
             const total = calcularOrcamento(distancia, tamanho, peso, tempo);
 
             $('#valorOrcamento').val(total);
 
-            // Mostra o resumo
             $('#resCliente').text(nome);
             $('#resTelefone').text(telefone);
             $('#resEndereco').text(endereco);

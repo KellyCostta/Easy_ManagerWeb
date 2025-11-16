@@ -13,13 +13,13 @@ namespace Easy_ManagerWeb.Controllers
             _context = context;
         }
 
-        // GET: Gasto/Novo_Gasto
+        // GET: NovoGasto
         public IActionResult Novo_Gasto()
         {
             return View();
         }
 
-        // POST: Gasto/Novo_Gasto
+        // POST: Novo_Gasto
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Novo_Gasto(Gasto gasto)
@@ -40,5 +40,43 @@ namespace Easy_ManagerWeb.Controllers
             var lista = _context.Gasto.ToList();
             return View(lista);
         }
+
+        [HttpPost]
+        public IActionResult Excluir_Gasto(int id)
+        {
+            var gasto = _context.Gasto.Find(id);
+
+            if (gasto == null)
+                return NotFound();
+
+            _context.Gasto.Remove(gasto);
+            _context.SaveChanges();
+
+            return RedirectToAction("Gerenciamento_Gastos");
+        }
+        public JsonResult BuscarGasto(int id)
+        {
+            var gasto = _context.Gasto.Find(id);
+            return Json(gasto);
+        }
+
+        [HttpPost]
+        public JsonResult Editar_Gasto_Ajax([FromBody] Gasto gasto)
+        {
+            var g = _context.Gasto.Find(gasto.IdGasto);
+
+            if (g == null)
+                return Json(new { sucesso = false });
+
+            g.Tipo = gasto.Tipo;
+            g.Valor = gasto.Valor;
+            g.DataGasto = gasto.DataGasto;
+
+            _context.SaveChanges();
+
+            return Json(new { sucesso = true });
+        }
+
+
     }
 }

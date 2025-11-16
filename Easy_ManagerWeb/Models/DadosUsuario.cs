@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Easy_ManagerWeb.Models
 {
-    [Table("usuario")] // nome da tabela no MySQL
+    [Table("usuario")]
     public class DadosUsuario
     {
         [Key]
-        [Column("nome_usuario")] // 👈 chave primária
+        [Column("nome_usuario")] 
         public string Usuario { get; set; } = string.Empty;
 
         [Required]

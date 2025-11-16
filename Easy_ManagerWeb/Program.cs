@@ -40,7 +40,7 @@ builder.Services.AddDbContextPool<AppDbContext>(options =>
 
 
 
-// Controllers e Views
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(@"./keys"))
@@ -70,12 +70,13 @@ app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Middleware customizado (depois de Session!)
+
+
 app.Use(async (context, next) =>
 {
     var path = context.Request.Path.Value ?? "";
 
-    // Evita erro de rota nula
+
     if (!path.StartsWith("/Account/Login") && !path.StartsWith("/Account/Logout"))
     {
         var usuario = context.Session.GetString("usuario_logado");
@@ -90,12 +91,12 @@ app.Use(async (context, next) =>
         }
     }
 
-    await next.Invoke(); // importante usar Invoke()
+    await next.Invoke();
 });
 
 
 
-// Rota padrão
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Protegida}/{id?}"
